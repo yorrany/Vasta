@@ -1,9 +1,36 @@
 "use client"
 
+import { useState, useEffect } from "react"
 import Link from "next/link"
-import { Check, ArrowRight, Verified, ExternalLink, Github, Monitor, Calendar, Heart } from "lucide-react"
+import { Check, ArrowRight, Verified, ExternalLink, Github, Monitor, Calendar, Heart, Loader2 } from "lucide-react"
 
 export function Hero() {
+  const [username, setUsername] = useState("")
+  const [availability, setAvailability] = useState<{ available: boolean; message: string } | null>(null)
+  const [checking, setChecking] = useState(false)
+
+  useEffect(() => {
+    if (username.length < 3) {
+      setAvailability(null)
+      return
+    }
+
+    const timer = setTimeout(async () => {
+      setChecking(true)
+      try {
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/profiles/check_username?username=${username}`)
+        const data = await res.json()
+        setAvailability(data)
+      } catch (err) {
+        console.error("Error checking username:", err)
+      } finally {
+        setChecking(false)
+      }
+    }, 500)
+
+    return () => clearTimeout(timer)
+  }, [username])
+
   return (
     <section className="relative overflow-hidden border-b border-slate-800/60 pt-32 pb-24 md:pb-32 lg:pt-48">
       {/* Background radial gradients for depth */}
@@ -32,20 +59,33 @@ export function Hero() {
           </div>
 
           <div className="flex flex-col gap-4 sm:mx-auto sm:max-w-md md:mx-0">
-            <div className="flex flex-col gap-3 rounded-3xl border border-slate-700 bg-slate-900/40 p-2 sm:flex-row sm:items-center">
-                <div className="flex flex-1 items-center px-4 py-2">
+            <div className={`flex flex-col gap-3 rounded-3xl border transition-all p-2 sm:flex-row sm:items-center ${
+                availability?.available ? "border-emerald-500/50 bg-emerald-500/5" : 
+                availability?.available === false ? "border-red-500/50 bg-red-500/5" : 
+                "border-slate-700 bg-slate-900/40"
+            }`}>
+                <div className="flex flex-1 items-center px-4 py-2 relative">
                     <span className="text-sm font-medium text-slate-500">vasta.pro/</span>
                     <input
+                        value={username}
+                        onChange={(e) => setUsername(e.target.value)}
                         placeholder="seu-nome"
                         className="flex-1 bg-transparent px-1 text-sm font-medium text-white placeholder:text-slate-600 focus:outline-none"
                     />
+                    {checking && <Loader2 className="absolute right-2 h-4 w-4 animate-spin text-vasta-primary" />}
                 </div>
-                <button className="flex items-center justify-center gap-2 rounded-2xl bg-slate-800 px-6 py-3 text-sm font-bold text-white transition-all hover:bg-slate-700">
+                <button className="flex items-center justify-center gap-2 rounded-2xl bg-slate-800 px-6 py-3 text-sm font-bold text-white transition-all hover:bg-slate-700 disabled:opacity-50 disabled:cursor-not-allowed">
                     Criar grátis <ArrowRight className="h-4 w-4" />
                 </button>
             </div>
+            
+            {availability && (
+                <div className={`text-[11px] font-semibold px-4 ${availability.available ? "text-emerald-400" : "text-red-400"}`}>
+                    {availability.available ? "✓ Nome disponível!" : `✗ Nome ${availability.message}`}
+                </div>
+            )}
 
-            <div className="flex flex-wrap justify-center gap-6 text-xs font-semibold text-vasta-muted md:justify-start">
+            <div className="flex flex-wrap justify-center gap-6 text-xs font-semibold text-vasta-muted md:justify-start pt-2">
                 <div className="flex items-center gap-2">
                     <Check className="h-4 w-4 text-emerald-400" />
                     <span>Plano Grátis</span>
@@ -85,7 +125,7 @@ export function Hero() {
                     </div>
                     
                     <div className="mt-4 flex items-center gap-1.5">
-                        <span className="text-base font-bold text-white">@seunome</span>
+                        <span className="text-base font-bold text-white">@{username || "seunome"}</span>
                         <Verified className="h-4 w-4 text-blue-500 fill-blue-500/20" />
                     </div>
                     <p className="mt-2 text-center text-xs font-medium leading-relaxed text-slate-300">
@@ -119,7 +159,7 @@ export function Hero() {
                 </div>
 
                 {/* Products Section */}
-                <div className="mt-8 px-6">
+                <div className="mt-8 px-6 pb-6">
                     <div className="flex items-center justify-between mb-4">
                         <span className="text-[10px] font-bold uppercase tracking-widest text-slate-500">Produtos & Ofertas</span>
                         <Heart className="h-3 w-3 text-slate-600" />
