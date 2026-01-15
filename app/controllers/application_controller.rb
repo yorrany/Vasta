@@ -1,5 +1,6 @@
 class ApplicationController < ActionController::API
   before_action :set_current_tenant
+  before_action :ensure_tenant_active
 
   private
 
@@ -10,6 +11,14 @@ class ApplicationController < ActionController::API
       render json: { error: "Tenant not found" }, status: :not_found
     else
       Current.tenant = tenant
+    end
+  end
+
+  def ensure_tenant_active
+    return unless Current.tenant
+
+    if Current.tenant.billing_status == "blocked"
+      render json: { error: "Tenant blocked due to unpaid subscription" }, status: :payment_required
     end
   end
 end

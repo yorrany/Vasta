@@ -1,0 +1,35 @@
+# Ruby/Rails
+/.bundle
+/vendor/bundle
+/log/*
+/tmp/*
+/storage/*
+/coverage
+/node_modules
+/config/master.key
+/config/credentials.yml.enc
+/.byebug_history
+
+# Rails artifacts
+/public/assets
+/public/packs
+/public/packs-test
+
+# Node/Next.js (frontend)
+/web/node_modules
+/web/.next
+/web/out
+/web/.env.local
+/web/.env.production
+/web/.env.development
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.idea
+.vscode
+
+# Docker
+/.env
+.docker-compose.override.yml
+

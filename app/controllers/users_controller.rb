@@ -10,12 +10,20 @@ class UsersController < ApplicationController
   end
 
   def create
+    params_role = user_params[:role] || "admin"
+
+    enforcer = Plans::Enforcer.new(Current.tenant)
+    enforcer.ensure_admin_user_creation_allowed!(params_role)
+
     user = Current.tenant.users.new(user_params)
-    if user.save
-      render json: user, status: :created
-    else
-      render json: { errors: user.errors.full_messages }, status: :unprocessable_entity
-    end
+    user.role ||= "admin"
+    user.save!
+
+    render json: user, status: :created
+  rescue Plans::LimitExceededError => e
+    render json: { code: e.code, error: e.message }, status: :unprocessable_entity
+  rescue ActiveRecord::RecordInvalid => e
+    render json: { errors: e.record.errors.full_messages }, status: :unprocessable_entity
   end
 
   def update
@@ -39,4 +47,3 @@ class UsersController < ApplicationController
     params.require(:user).permit(:name, :email, :role, :status)
   end
 end
-
