@@ -87,9 +87,12 @@ test:
 #
 production:
   <<: *default
-  database: vasta_production
-  username: vasta
-  password: <%= ENV["VASTA_DATABASE_PASSWORD"] %>
+  url: <%= ENV["DATABASE_URL"] %>
+  # Alternatively, use specific variables if DATABASE_URL is not provided
+  database: <%= ENV.fetch("DB_NAME") { "vasta_production" } %>
+  username: <%= ENV.fetch("DB_USER") { "vasta" } %>
+  password: <%= ENV["DB_PASSWORD"] %>
   host: <%= ENV.fetch("DB_HOST", "aws-0-sa-east-1.pooler.supabase.com") %>
   port: <%= ENV.fetch("DB_PORT", 6543) %>
   prepared_statements: false
+  advisory_locks: false # Helpful for PGBouncer/Supabase Transaction mode
