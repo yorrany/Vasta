@@ -5,16 +5,6 @@ Rails.application.routes.draw do
     end
   end
 
-  # rotas existentes
-  get "up" => "rails/health#show", as: :rails_health_check
-  get "plans", to: "plans#index"
-  get "profiles/check_username", to: "profiles#check_username"
-
-  root to: ->(_) { [200, {}, ["OK"]] }
-end
-
-
-Rails.application.routes.draw do
   get "up" => "rails/health#show", as: :rails_health_check
 
   get "plans", to: "plans#index"
