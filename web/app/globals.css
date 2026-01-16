@@ -8,17 +8,18 @@
   --surface: 255 255 255;
   --surface-soft: 245 245 244; /* Stone-100 */
   --border: 231 229 228; /* Stone-200 */
-  
+
   --primary: 99 102 241; /* Indigo-500 */
   --primary-soft: 129 140 248; /* Indigo-400 */
   --accent: 236 72 153; /* Pink-500 */
   --accent-soft: 244 114 182; /* Pink-400 */
-  
+
   --text: 28 25 23; /* Stone-900 */
   --text-soft: 68 64 60; /* Stone-700 */
   --muted: 120 113 108; /* Stone-500 */
 
-  --card-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.05), 0 2px 4px -2px rgb(0 0 0 / 0.05);
+  --card-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.05),
+    0 2px 4px -2px rgb(0 0 0 / 0.05);
 }
 
 @media (prefers-color-scheme: dark) {
@@ -28,12 +29,12 @@
     --surface: 21 25 35; /* Rich Charcoal */
     --surface-soft: 30 35 48; /* Lighter Charcoal */
     --border: 42 48 66; /* Blue-tinted border */
-    
+
     --primary: 129 140 248; /* Indigo-400 */
     --primary-soft: 99 102 241; /* Indigo-500 */
     --accent: 244 114 182; /* Pink-400 */
     --accent-soft: 236 72 153; /* Pink-500 */
-    
+
     --text: 243 244 246; /* Gray-100 */
     --text-soft: 209 213 219; /* Gray-300 */
     --muted: 156 163 175; /* Gray-400 */
@@ -50,7 +51,12 @@ body {
 }
 
 .gradient-title {
-  background: linear-gradient(90deg, rgb(var(--primary)), rgb(var(--accent)), rgb(var(--accent-soft)));
+  background: linear-gradient(
+    90deg,
+    rgb(var(--primary)),
+    rgb(var(--accent)),
+    rgb(var(--accent-soft))
+  );
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
@@ -77,4 +83,77 @@ body {
 }
 .custom-scrollbar::-webkit-scrollbar-thumb:hover {
   background-color: rgb(var(--muted));
+}
+
+/* Elegant Scrollbar for Mockups */
+.mockup-scrollbar::-webkit-scrollbar {
+  width: 4px;
+}
+.mockup-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+.mockup-scrollbar::-webkit-scrollbar-thumb {
+  background-color: rgba(var(--muted), 0.3);
+  border-radius: 9999px;
+}
+.mockup-scrollbar::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(var(--muted), 0.5);
+}
+
+@keyframes fade-in-up {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-20px);
+  }
+}
+
+@keyframes pulse-soft {
+  0%,
+  100% {
+    opacity: 0.6;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.8;
+    transform: scale(1.05);
+  }
+}
+
+.animate-fade-in-up {
+  animation: fade-in-up 0.8s ease-out forwards;
+}
+
+.animate-float {
+  animation: float 6s ease-in-out infinite;
+}
+
+.animate-pulse-soft {
+  animation: pulse-soft 3s ease-in-out infinite;
+}
+
+.delay-100 {
+  animation-delay: 100ms;
+}
+.delay-200 {
+  animation-delay: 200ms;
+}
+.delay-300 {
+  animation-delay: 300ms;
+}
+.delay-500 {
+  animation-delay: 500ms;
 }

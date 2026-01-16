@@ -9,10 +9,21 @@ class ProfilesController < ApplicationController
     exists = Profile.exists?(slug: username)
     available = !exists && !reserved_usernames.include?(username)
 
+    suggestions = []
+    unless available
+      suggestions = [
+        "#{username}pro",
+        "#{username}hq",
+        "sou#{username}",
+        "#{username}_dev"
+      ].reject { |s| Profile.exists?(slug: s) }.first(3)
+    end
+
     render json: { 
       available: available, 
       username: username,
-      message: available ? "Disponível!" : "indisponível"
+      message: available ? "Disponível!" : "indisponível",
+      suggestions: suggestions
     }
   end
 
