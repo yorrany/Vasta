@@ -28,6 +28,7 @@ services:
       RAILS_ENV: development
       DATABASE_URL: postgres://vasta:password@db:5432/vasta_development
       REDIS_URL: redis://redis:6379/1
+      VASTA_INTERNO: "true"
     depends_on:
       - db
       - redis
