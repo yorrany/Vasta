@@ -18,3 +18,8 @@
   from = "/profiles/*"
   to = "https://vasta-ruby-antigravity.onrender.com/profiles/:splat"
   status = 200
+
+[[redirects]]
+  from = "/platform/*"
+  to = "https://vasta-ruby-antigravity.onrender.com/platform/:splat"
+  status = 200

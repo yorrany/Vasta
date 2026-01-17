@@ -10,5 +10,9 @@ Rails.application.routes.draw do
   get "plans", to: "plans#index"
   get "profiles/check_username", to: "profiles#check_username"
 
+  namespace :platform do
+    post "subscriptions/checkout", to: "subscriptions#checkout"
+  end
+
   root to: proc { [200, { "Content-Type" => "text/plain" }, ["OK"]] }
 end

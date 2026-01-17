@@ -105,28 +105,27 @@ export function Pricing() {
       setLoading(true)
       
       const isYearly = billingCycle === 'yearly'
-      let priceId: string | undefined
-
-      if (planCode === 'pro') {
-        priceId = isYearly 
-          ? process.env.NEXT_PUBLIC_STRIPE_PRICE_PRO_YEARLY 
-          : process.env.NEXT_PUBLIC_STRIPE_PRICE_PRO
-      } else if (planCode === 'business') {
-        priceId = isYearly 
-          ? process.env.NEXT_PUBLIC_STRIPE_PRICE_BUSINESS_YEARLY 
-          : process.env.NEXT_PUBLIC_STRIPE_PRICE_BUSINESS
-      }
-
-      if (!priceId) {
-        throw new Error("Price ID not found")
-      }
-
-      const response = await fetch('/api/checkout', {
+      const cycle = isYearly ? 'yearly' : 'monthly'
+      
+      // Call Ruby Backend
+      // The proxy in netlify.toml maps /platform/* to backend if we add a rule,
+      // OR we can just use the absolute URL if CORS is allowed.
+      // Netlify proxy for /plans/checkout or similar.
+      // Wait, I added namespace :platform. So route is /platform/subscriptions/checkout
+      // I need to add a proxy rule for /platform/* in netlify.toml as well!
+      // OR I can use the existing /api proxy if I moved it? NO, I removed /api/*.
+      
+      // Let's assume I will add /platform/* to netlify.toml in a moment.
+      const response = await fetch('/platform/subscriptions/checkout', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ priceId }),
+        body: JSON.stringify({ 
+          plan_code: planCode,
+          cycle: cycle,
+          base_url: window.location.origin 
+        }),
       })
 
       if (!response.ok) throw new Error('Checkout failed')
