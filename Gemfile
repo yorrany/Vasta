@@ -36,6 +36,7 @@ gem "drb"
 gem "mutex_m"
 gem "csv"
 gem "observer"
+gem "connection_pool", "~> 2.4"
 
 # Reduces boot times through caching; required in config/boot.rb
 gem "bootsnap", require: false
