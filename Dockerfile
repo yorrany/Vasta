@@ -13,7 +13,6 @@ ENV RAILS_ENV="production" \
     BUNDLE_PATH="/usr/local/bundle"
 
 
-
 # Throw-away build stage to reduce size of final image
 FROM base as build
 
@@ -54,7 +53,6 @@ COPY --from=build /rails /rails
 RUN useradd rails --create-home --shell /bin/bash && \
     chown -R rails:rails db log storage tmp
 USER rails:rails
-
 
 # Start the server by default, this can be overwritten at runtime
 EXPOSE 3000
