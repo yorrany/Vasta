@@ -1,6 +1,6 @@
 import type { OpenNextConfig } from '@opennextjs/aws/types/open-next';
 
-const config: OpenNextConfig = {
+export default {
   default: {
     placement: "arch",
     override: {
@@ -14,6 +14,4 @@ const config: OpenNextConfig = {
     },
   },
   buildCommand: "npx @opennextjs/cloudflare build",
-};
-
-export default config;
+} as OpenNextConfig;
