@@ -20,6 +20,7 @@ import {
 } from "lucide-react";
 import { createClient } from "../../../lib/supabase/client";
 import { useAuth } from "../../../lib/AuthContext";
+import { ColorPickerModal } from "../../../components/ui/ColorPickerModal";
 
 import { useAppearance, useConfirm } from "../layout";
 
@@ -34,6 +35,7 @@ export default function AparenciaPage() {
   const [unsplashResult, setUnsplashResult] = useState<any[]>([]);
   const [isSearching, setIsSearching] = useState(false);
   const [uploading, setUploading] = useState(false);
+  const [isColorPickerOpen, setIsColorPickerOpen] = useState(false);
 
   // Username Logic
   const [isUsernameLocked, setIsUsernameLocked] = useState(true);
@@ -616,162 +618,190 @@ export default function AparenciaPage() {
             <h4 className="text-xs font-bold text-vasta-muted uppercase tracking-widest mb-4 px-1">
               Temas Prontos
             </h4>
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-2 lg:grid-cols-3 gap-4">
+              {/* Light Theme */}
               <button
                 onClick={() => updateSettings({ theme: "light" })}
                 className={`relative group overflow-hidden rounded-3xl border-2 p-1 transition-all hover:scale-[1.02] active:scale-[0.98] ${settings.theme === "light" ? "border-vasta-primary shadow-lg shadow-vasta-primary/10" : "border-vasta-border hover:border-vasta-muted"}`}
               >
-                <div className="h-20 w-full rounded-2xl bg-[#FAFAF9] flex items-center justify-center">
-                  {" "}
-                  {/* @vasta-ux-exception: Theme Preview Color */}
+                <div className="h-20 w-full rounded-2xl bg-[#FAFAF9] flex items-center justify-center border border-black/5">
                   <div className="h-8 w-16 bg-white rounded-lg shadow-sm" />
                 </div>
                 <div className="p-3 text-center">
-                  <span className="text-sm font-bold text-vasta-text">
-                    Sol de Verão
-                  </span>
-                  {settings.theme === "light" && (
-                    <div className="absolute top-2 right-2 bg-vasta-primary text-white p-1 rounded-full">
-                      <Check size={10} />
-                    </div>
-                  )}
+                  <span className="text-sm font-bold text-vasta-text">Clássico</span>
+                  {settings.theme === "light" && <div className="absolute top-2 right-2 bg-vasta-primary text-white p-1 rounded-full"><Check size={10} /></div>}
                 </div>
               </button>
 
+              {/* Dark Theme */}
               <button
                 onClick={() => updateSettings({ theme: "dark" })}
                 className={`relative group overflow-hidden rounded-3xl border-2 p-1 transition-all hover:scale-[1.02] active:scale-[0.98] ${settings.theme === "dark" ? "border-vasta-primary shadow-lg shadow-vasta-primary/10" : "border-vasta-border hover:border-vasta-muted"}`}
               >
-                <div className="h-20 w-full rounded-2xl bg-[#0B0E14] flex items-center justify-center">
-                  {" "}
-                  {/* @vasta-ux-exception: Theme Preview Color */}
-                  <div className="h-8 w-16 bg-[#151923] rounded-lg shadow-sm" />{" "}
-                  {/* @vasta-ux-exception: Theme Preview Color */}
+                <div className="h-20 w-full rounded-2xl bg-[#0B0E14] flex items-center justify-center border border-white/5">
+                  <div className="h-8 w-16 bg-[#151923] rounded-lg shadow-sm border border-white/5" />
                 </div>
                 <div className="p-3 text-center">
-                  <span className="text-sm font-bold text-vasta-text">
-                    Escuro Puro
-                  </span>
-                  {settings.theme === "dark" && (
-                    <div className="absolute top-2 right-2 bg-vasta-primary text-white p-1 rounded-full">
-                      <Check size={10} />
-                    </div>
-                  )}
+                  <span className="text-sm font-bold text-vasta-text">Escuro</span>
+                  {settings.theme === "dark" && <div className="absolute top-2 right-2 bg-vasta-primary text-white p-1 rounded-full"><Check size={10} /></div>}
+                </div>
+              </button>
+
+              {/* Neo-Pop Theme */}
+              <button
+                onClick={() => updateSettings({ theme: "neo" })}
+                className={`relative group overflow-hidden rounded-3xl border-2 p-1 transition-all hover:scale-[1.02] active:scale-[0.98] ${settings.theme === "neo" ? "border-vasta-primary shadow-lg shadow-vasta-primary/10" : "border-vasta-border hover:border-vasta-muted"}`}
+              >
+                <div className="h-20 w-full rounded-xl bg-[#FEF3C7] border-2 border-black flex items-center justify-center">
+                  <div className="h-8 w-16 bg-white border-2 border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]" />
+                </div>
+                <div className="p-3 text-center">
+                  <span className="text-sm font-bold text-vasta-text">Neo-Pop</span>
+                  {settings.theme === "neo" && <div className="absolute top-2 right-2 bg-vasta-primary text-white p-1 rounded-full"><Check size={10} /></div>}
+                </div>
+              </button>
+
+              {/* Noir Theme */}
+              <button
+                onClick={() => updateSettings({ theme: "noir" })}
+                className={`relative group overflow-hidden rounded-3xl border-2 p-1 transition-all hover:scale-[1.02] active:scale-[0.98] ${settings.theme === "noir" ? "border-vasta-primary shadow-lg shadow-vasta-primary/10" : "border-vasta-border hover:border-vasta-muted"}`}
+              >
+                <div className="h-20 w-full rounded-2xl bg-[#09090b] border border-gray-800 flex items-center justify-center">
+                  <div className="h-8 w-16 bg-white/5 backdrop-blur-md rounded-md border border-white/10" />
+                </div>
+                <div className="p-3 text-center">
+                  <span className="text-sm font-bold text-vasta-text">Noir Luxury</span>
+                  {settings.theme === "noir" && <div className="absolute top-2 right-2 bg-vasta-primary text-white p-1 rounded-full"><Check size={10} /></div>}
+                </div>
+              </button>
+
+              {/* Bento Theme */}
+              <button
+                onClick={() => updateSettings({ theme: "bento" })}
+                className={`relative group overflow-hidden rounded-3xl border-2 p-1 transition-all hover:scale-[1.02] active:scale-[0.98] ${settings.theme === "bento" ? "border-vasta-primary shadow-lg shadow-vasta-primary/10" : "border-vasta-border hover:border-vasta-muted"}`}
+              >
+                <div className="h-20 w-full rounded-[1.25rem] bg-[#F3F4F6] flex items-center justify-center">
+                  <div className="h-8 w-16 bg-white shadow-sm rounded-xl" />
+                </div>
+                <div className="p-3 text-center">
+                  <span className="text-sm font-bold text-vasta-text">Bento Clean</span>
+                  {settings.theme === "bento" && <div className="absolute top-2 right-2 bg-vasta-primary text-white p-1 rounded-full"><Check size={10} /></div>}
+                </div>
+              </button>
+
+              {/* Custom Theme - Create Your Own */}
+              <button
+                onClick={() => updateSettings({ theme: "custom" })}
+                className={`relative group overflow-hidden rounded-3xl border-2 p-1 transition-all hover:scale-[1.02] active:scale-[0.98] ${settings.theme === "custom" ? "border-vasta-primary shadow-lg shadow-vasta-primary/10" : "border-dashed border-vasta-border hover:border-vasta-muted"}`}
+              >
+                <div className="h-20 w-full rounded-2xl bg-gradient-to-br from-vasta-primary/20 via-purple-500/20 to-pink-500/20 flex items-center justify-center border border-vasta-border">
+                  <div className="flex items-center gap-2 text-vasta-muted">
+                    <Plus size={20} />
+                    <span className="text-xs font-bold uppercase tracking-wider">Criar</span>
+                  </div>
+                </div>
+                <div className="p-3 text-center">
+                  <span className="text-sm font-bold text-vasta-text">Personalizado</span>
+                  {settings.theme === "custom" && <div className="absolute top-2 right-2 bg-vasta-primary text-white p-1 rounded-full"><Check size={10} /></div>}
                 </div>
               </button>
             </div>
 
-            <h4 className="text-xs font-bold text-vasta-muted uppercase tracking-widest mt-8 mb-4 px-1">
-              Cor de Destaque
-            </h4>
-            <div className="flex flex-wrap gap-4 px-1">
-              {[
-                "#6366F1",
-                "#EC4899",
-                "#10B981",
-                "#F59E0B",
-                "#000000",
-                "#EF4444",
-              ].map(
-                (
-                  color, // @vasta-ux-exception: Color Picker Palette
-                ) => (
-                  <button
-                    key={color}
-                    onClick={() => updateSettings({ accentColor: color })}
-                    className={`h-12 w-12 rounded-2xl transition-all hover:scale-110 active:scale-90 flex items-center justify-center group ${settings.accentColor === color ? "ring-4 ring-vasta-primary/10 border-2 border-vasta-primary" : "border border-vasta-border"}`}
-                    style={{ backgroundColor: color }}
-                  >
-                    {settings.accentColor === color && (
-                      <Check
-                        className={
-                          color === "#000000" ? "text-white" : "text-black/50"
-                        }
-                        size={20}
-                      />
-                    )}{" "}
-                    {/* @vasta-ux-exception: Contrast Logic */}
-                  </button>
-                ),
-              )}
-            </div>
-          </div>
-        </div>
-      </section>
 
-      {/* Estilo dos Links */}
-      <section className="animate-fade-in [animation-delay:250ms] space-y-4">
-        <div className="flex items-center gap-2 px-1">
-          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-vasta-primary/10 text-vasta-primary">
-            <Layout size={18} />
-          </div>
-          <h3 className="text-sm font-bold text-vasta-text uppercase tracking-wider">
-            Estilo dos Links
-          </h3>
-        </div>
+            {/* Studio de Criação - Unificado para Tema Personalizado */}
+            {settings.theme === "custom" && (
+              <div className="mt-8 pt-8 border-t border-dashed border-vasta-border animate-in fade-in zoom-in-95 duration-300">
+                <div className="flex items-center gap-3 mb-6 px-1">
+                  <div className="h-10 w-10 flex items-center justify-center rounded-xl bg-gradient-to-br from-purple-500/20 to-pink-500/20 text-purple-500">
+                    <Sparkles size={20} />
+                  </div>
+                  <div>
+                    <h4 className="text-lg font-bold text-vasta-text">Estúdio de Criação</h4>
+                    <p className="text-sm text-vasta-muted">Personalize cada detalhe do seu tema</p>
+                  </div>
+                </div>
 
-        <div className="rounded-[2.5rem] border border-vasta-border bg-vasta-surface p-2 shadow-card">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 p-4">
-            {[
-              { id: "glass", name: "Neon Glass" },
-              { id: "solid", name: "Sólido" },
-              { id: "outline", name: "Contorno" },
-            ].map((style) => (
-              <button
-                key={style.id}
-                onClick={() => updateSettings({ linkStyle: style.id as any })}
-                className={`p-4 rounded-3xl border-2 transition-all hover:scale-[1.02] active:scale-[0.98] flex flex-col items-center gap-3 ${settings.linkStyle === style.id ? "border-vasta-primary bg-vasta-primary/5" : "border-vasta-border"}`}
-              >
-                <div
-                  className={`h-10 w-full rounded-xl border ${style.id === "glass" ? "bg-white/10 backdrop-blur-md border-white/20" : style.id === "solid" ? "bg-vasta-primary border-transparent" : "bg-transparent border-vasta-primary"}`}
-                  style={{
-                    backgroundColor:
-                      style.id === "solid" ? settings.accentColor : undefined,
-                    borderColor:
-                      style.id === "outline" || style.id === "glass"
-                        ? settings.accentColor
-                        : undefined,
-                  }}
-                />
-                <span className="text-xs font-bold text-vasta-text">
-                  {style.name}
-                </span>
-              </button>
-            ))}
-          </div>
-        </div>
-      </section>
+                <div className="space-y-8 bg-vasta-bg/50 p-6 rounded-[2rem] border border-vasta-border/50">
 
-      {/* Tipografia */}
-      <section className="animate-fade-in [animation-delay:300ms] space-y-4">
-        <div className="flex items-center gap-2 px-1">
-          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-vasta-primary/10 text-vasta-primary">
-            <Type size={18} />
-          </div>
-          <h3 className="text-sm font-bold text-vasta-text uppercase tracking-wider">
-            Tipografia
-          </h3>
-        </div>
+                  {/* Seção 1: Cor de Destaque */}
+                  <div className="space-y-3">
+                    <label className="text-xs font-bold text-vasta-muted uppercase tracking-widest px-1 block">Cor Principal</label>
+                    <div className="flex flex-wrap gap-3">
+                      {[
+                        "#6366F1", "#EC4899", "#10B981", "#F59E0B", "#000000", "#EF4444",
+                      ].map((color) => (
+                        <button
+                          key={color}
+                          onClick={() => updateSettings({ accentColor: color })}
+                          className={`h-12 w-12 rounded-2xl transition-all hover:scale-110 active:scale-90 flex items-center justify-center group ${settings.accentColor === color ? "ring-4 ring-vasta-primary/10 border-2 border-vasta-primary shadow-lg shadow-vasta-primary/20" : "border border-vasta-border hover:border-vasta-muted"}`}
+                          style={{ backgroundColor: color }}
+                        >
+                          {settings.accentColor === color && <Check className={color === "#000000" ? "text-white" : "text-black/50"} size={20} />}
+                        </button>
+                      ))}
+                      <button
+                        onClick={() => setIsColorPickerOpen(true)}
+                        className={`h-12 w-12 rounded-2xl transition-all hover:scale-110 active:scale-90 flex items-center justify-center border-2 border-dashed border-vasta-border hover:border-vasta-primary group relative overflow-hidden`}
+                        style={{ background: `conic-gradient(from 0deg, #EF4444, #F59E0B, #10B981, #06B6D4, #6366F1, #EC4899, #EF4444)` }}
+                        title="Escolher cor personalizada"
+                      >
+                        <div className="absolute inset-[3px] rounded-xl bg-vasta-surface flex items-center justify-center">
+                          <Plus size={18} className="text-vasta-muted group-hover:text-vasta-primary transition-colors" />
+                        </div>
+                      </button>
+                    </div>
+                  </div>
 
-        <div className="rounded-[2.5rem] border border-vasta-border bg-vasta-surface p-2 shadow-card">
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 p-4">
-            {["Inter", "Poppins", "Montserrat", "Outfit"].map((font) => (
-              <button
-                key={font}
-                onClick={() => updateSettings({ typography: font })}
-                className={`p-4 rounded-3xl border-2 transition-all flex flex-col items-center gap-2 ${settings.typography === font ? "border-vasta-primary bg-vasta-primary/5" : "border-vasta-border hover:border-vasta-muted"}`}
-              >
-                <span
-                  className="text-xl font-bold"
-                  style={{ fontFamily: font }}
-                >
-                  Aa
-                </span>
-                <span className="text-[10px] font-bold text-vasta-muted uppercase tracking-widest">
-                  {font}
-                </span>
-              </button>
-            ))}
+                  {/* Seção 2: Estilo dos Links */}
+                  <div className="space-y-3">
+                    <label className="text-xs font-bold text-vasta-muted uppercase tracking-widest px-1 block">Estilo dos Botões</label>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                      {[
+                        { id: "glass", name: "Neon Glass" },
+                        { id: "solid", name: "Sólido" },
+                        { id: "outline", name: "Contorno" },
+                      ].map((style) => (
+                        <button
+                          key={style.id}
+                          onClick={() => updateSettings({ linkStyle: style.id as any })}
+                          className={`p-3 rounded-2xl border transition-all hover:scale-[1.02] active:scale-[0.98] flex items-center gap-3 text-left ${settings.linkStyle === style.id ? "border-vasta-primary bg-vasta-surface shadow-sm" : "border-vasta-border bg-vasta-bg hover:bg-vasta-surface"}`}
+                        >
+                          <div
+                            className={`h-10 w-12 rounded-lg border shadow-sm ${style.id === "glass" ? "bg-white/10 backdrop-blur-md border-white/20" : style.id === "solid" ? "bg-vasta-primary border-transparent" : "bg-transparent border-vasta-primary"}`}
+                            style={{
+                              backgroundColor: style.id === "solid" ? settings.accentColor : undefined,
+                              borderColor: style.id === "outline" || style.id === "glass" ? settings.accentColor : undefined,
+                            }}
+                          />
+                          <span className={`text-sm font-bold ${settings.linkStyle === style.id ? "text-vasta-primary" : "text-vasta-text"}`}>
+                            {style.name}
+                          </span>
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Seção 3: Tipografia */}
+                  <div className="space-y-3">
+                    <label className="text-xs font-bold text-vasta-muted uppercase tracking-widest px-1 block">Tipografia</label>
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                      {["Inter", "Poppins", "Montserrat", "Outfit"].map((font) => (
+                        <button
+                          key={font}
+                          onClick={() => updateSettings({ typography: font })}
+                          className={`p-3 rounded-2xl border transition-all flex flex-col items-center justify-center gap-1 ${settings.typography === font ? "border-vasta-primary bg-vasta-surface shadow-sm" : "border-vasta-border bg-vasta-bg hover:bg-vasta-surface"}`}
+                        >
+                          <span className="text-xl font-bold text-vasta-text" style={{ fontFamily: font }}>Aa</span>
+                          <span className={`text-[10px] font-bold uppercase tracking-wider ${settings.typography === font ? "text-vasta-primary" : "text-vasta-muted"}`}>
+                            {font}
+                          </span>
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
         </div>
       </section>
@@ -787,161 +817,173 @@ export default function AparenciaPage() {
       </div>
 
       {/* Unsplash Modal */}
-      {isUnsplashOpen && (
-        <div
-          className="fixed inset-0 z-[200] w-screen h-screen flex items-center justify-center bg-black/80 p-4 backdrop-blur-sm transition-all"
-          onClick={() => setIsUnsplashOpen(false)}
-        >
+      {
+        isUnsplashOpen && (
           <div
-            className="w-full max-w-3xl rounded-[2rem] bg-vasta-surface border border-vasta-border shadow-2xl overflow-hidden animate-slide-up flex flex-col max-h-[85vh]"
-            onClick={(e) => e.stopPropagation()}
+            className="fixed inset-0 z-[200] w-screen h-screen flex items-center justify-center bg-black/80 p-4 backdrop-blur-sm transition-all"
+            onClick={() => setIsUnsplashOpen(false)}
           >
-            <div className="flex items-center justify-between border-b border-vasta-border px-6 py-5 shrink-0">
-              <h3 className="text-lg font-bold text-vasta-text flex items-center gap-2">
-                <Search className="text-vasta-primary" size={20} /> Buscar no
-                Pexels
-              </h3>
-              <button
-                onClick={() => setIsUnsplashOpen(false)}
-                className="rounded-full bg-vasta-surface-soft p-2 text-vasta-muted hover:text-vasta-text transition-colors"
-              >
-                <X size={20} />
-              </button>
-            </div>
-
-            <div className="p-6 overflow-y-auto custom-scrollbar">
-              <form onSubmit={handleUnsplashSearch} className="flex gap-3 mb-6">
-                <div className="relative flex-1">
-                  <Search
-                    className="absolute left-4 top-1/2 -translate-y-1/2 text-vasta-muted"
-                    size={18}
-                  />
-                  <input
-                    type="text"
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    placeholder="Ex: sunset, nature, minimalism..."
-                    className="w-full rounded-xl bg-vasta-surface-soft border border-vasta-border px-12 py-3 text-sm font-medium text-vasta-text focus:outline-none focus:ring-2 focus:ring-vasta-primary/20 focus:border-vasta-primary transition-all shadow-inner"
-                    autoFocus
-                  />
-                </div>
+            <div
+              className="w-full max-w-3xl rounded-[2rem] bg-vasta-surface border border-vasta-border shadow-2xl overflow-hidden animate-slide-up flex flex-col max-h-[85vh]"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="flex items-center justify-between border-b border-vasta-border px-6 py-5 shrink-0">
+                <h3 className="text-lg font-bold text-vasta-text flex items-center gap-2">
+                  <Search className="text-vasta-primary" size={20} /> Buscar no
+                  Pexels
+                </h3>
                 <button
-                  type="submit"
-                  disabled={isSearching}
-                  className="rounded-xl bg-vasta-primary px-6 py-3 text-sm font-bold text-white shadow-lg shadow-vasta-primary/20 hover:bg-vasta-primary-soft transition-all disabled:opacity-50"
+                  onClick={() => setIsUnsplashOpen(false)}
+                  className="rounded-full bg-vasta-surface-soft p-2 text-vasta-muted hover:text-vasta-text transition-colors"
                 >
-                  {isSearching ? (
-                    <Loader2 className="animate-spin" />
-                  ) : (
-                    "Buscar"
-                  )}
+                  <X size={20} />
                 </button>
-              </form>
+              </div>
 
-              <div className="grid grid-cols-2 md:grid-cols-3 gap-4 pb-2">
-                {unsplashResult.map((photo: any) => (
-                  <button
-                    key={photo.id}
-                    onClick={() => {
-                      updateSettings({
-                        coverImage: photo.urls.regular,
-                        coverImageCredit: `${photo.user.name}|${photo.user.url}`,
-                      });
-                      setIsUnsplashOpen(false);
-                    }}
-                    className="group relative aspect-video overflow-hidden rounded-xl transition-all hover:scale-[1.02] active:scale-[0.98] shadow-sm hover:shadow-xl w-full"
-                  >
-                    <img
-                      src={photo.urls.small}
-                      className="h-full w-full object-cover"
-                      alt={photo.alt_description}
+              <div className="p-6 overflow-y-auto custom-scrollbar">
+                <form onSubmit={handleUnsplashSearch} className="flex gap-3 mb-6">
+                  <div className="relative flex-1">
+                    <Search
+                      className="absolute left-4 top-1/2 -translate-y-1/2 text-vasta-muted"
+                      size={18}
                     />
-                    <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                      <Plus className="text-white drop-shadow-md" size={24} />
-                    </div>
-                    <div className="absolute bottom-0 left-0 right-0 p-2 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity">
-                      <p className="text-[10px] text-white truncate px-1">
-                        {photo.user.name}
-                      </p>
-                    </div>
+                    <input
+                      type="text"
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                      placeholder="Ex: sunset, nature, minimalism..."
+                      className="w-full rounded-xl bg-vasta-surface-soft border border-vasta-border px-12 py-3 text-sm font-medium text-vasta-text focus:outline-none focus:ring-2 focus:ring-vasta-primary/20 focus:border-vasta-primary transition-all shadow-inner"
+                      autoFocus
+                    />
+                  </div>
+                  <button
+                    type="submit"
+                    disabled={isSearching}
+                    className="rounded-xl bg-vasta-primary px-6 py-3 text-sm font-bold text-white shadow-lg shadow-vasta-primary/20 hover:bg-vasta-primary-soft transition-all disabled:opacity-50"
+                  >
+                    {isSearching ? (
+                      <Loader2 className="animate-spin" />
+                    ) : (
+                      "Buscar"
+                    )}
                   </button>
-                ))}
+                </form>
+
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-4 pb-2">
+                  {unsplashResult.map((photo: any) => (
+                    <button
+                      key={photo.id}
+                      onClick={() => {
+                        updateSettings({
+                          coverImage: photo.urls.regular,
+                          coverImageCredit: `${photo.user.name}|${photo.user.url}`,
+                        });
+                        setIsUnsplashOpen(false);
+                      }}
+                      className="group relative aspect-video overflow-hidden rounded-xl transition-all hover:scale-[1.02] active:scale-[0.98] shadow-sm hover:shadow-xl w-full"
+                    >
+                      <img
+                        src={photo.urls.small}
+                        className="h-full w-full object-cover"
+                        alt={photo.alt_description}
+                      />
+                      <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                        <Plus className="text-white drop-shadow-md" size={24} />
+                      </div>
+                      <div className="absolute bottom-0 left-0 right-0 p-2 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity">
+                        <p className="text-[10px] text-white truncate px-1">
+                          {photo.user.name}
+                        </p>
+                      </div>
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <div className="border-t border-vasta-border px-6 py-3 bg-vasta-surface-soft/30 shrink-0">
+                <p className="text-[10px] text-vasta-muted text-center uppercase tracking-widest font-bold">
+                  Images provided by Pexels
+                </p>
               </div>
             </div>
-
-            <div className="border-t border-vasta-border px-6 py-3 bg-vasta-surface-soft/30 shrink-0">
-              <p className="text-[10px] text-vasta-muted text-center uppercase tracking-widest font-bold">
-                Images provided by Pexels
-              </p>
-            </div>
           </div>
-        </div>
-      )}
+        )
+      }
 
       {/* Crop Modal */}
-      {isCropOpen && croppingImage && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/80 p-4 backdrop-blur-md">
-          <div className="w-full max-w-md rounded-[2rem] bg-vasta-surface border border-vasta-border shadow-2xl overflow-hidden flex flex-col h-[500px]">
-            <div className="p-4 border-b border-vasta-border flex justify-between items-center bg-vasta-surface z-10">
-              <h3 className="font-bold text-vasta-text">Ajuste sua Foto</h3>
-              <button
-                onClick={() => setIsCropOpen(false)}
-                className="text-vasta-muted hover:text-vasta-text"
-              >
-                <X />
-              </button>
-            </div>
-
-            <div className="relative flex-1 bg-black">
-              <Cropper
-                image={croppingImage}
-                crop={crop}
-                zoom={zoom}
-                aspect={1}
-                onCropChange={setCrop}
-                onCropComplete={onCropComplete}
-                onZoomChange={setZoom}
-              />
-            </div>
-
-            <div className="p-6 bg-vasta-surface flex flex-col gap-4 z-10">
-              <div className="flex items-center gap-2">
-                <span className="text-xs font-bold text-vasta-muted">Zoom</span>
-                <input
-                  type="range"
-                  value={zoom}
-                  min={1}
-                  max={3}
-                  step={0.1}
-                  aria-labelledby="Zoom"
-                  onChange={(e) => setZoom(Number(e.target.value))}
-                  className="w-full h-1 bg-vasta-surface-soft rounded-lg appearance-none cursor-pointer accent-vasta-primary"
-                />
-              </div>
-              <div className="flex gap-3">
+      {
+        isCropOpen && croppingImage && (
+          <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/80 p-4 backdrop-blur-md">
+            <div className="w-full max-w-md rounded-[2rem] bg-vasta-surface border border-vasta-border shadow-2xl overflow-hidden flex flex-col h-[500px]">
+              <div className="p-4 border-b border-vasta-border flex justify-between items-center bg-vasta-surface z-10">
+                <h3 className="font-bold text-vasta-text">Ajuste sua Foto</h3>
                 <button
                   onClick={() => setIsCropOpen(false)}
-                  className="flex-1 py-3 rounded-xl font-bold text-sm border border-vasta-border text-vasta-text hover:bg-vasta-surface-soft"
+                  className="text-vasta-muted hover:text-vasta-text"
                 >
-                  Cancelar
+                  <X />
                 </button>
-                <button
-                  onClick={handleCropConfirm}
-                  disabled={uploading}
-                  className="flex-1 py-3 rounded-xl font-bold text-sm bg-vasta-primary text-white hover:bg-vasta-primary-soft flex justify-center items-center gap-2"
-                >
-                  {uploading ? (
-                    <Loader2 className="animate-spin" size={16} />
-                  ) : (
-                    <Check size={16} />
-                  )}
-                  Salvar Foto
-                </button>
+              </div>
+
+              <div className="relative flex-1 bg-black">
+                <Cropper
+                  image={croppingImage}
+                  crop={crop}
+                  zoom={zoom}
+                  aspect={1}
+                  onCropChange={setCrop}
+                  onCropComplete={onCropComplete}
+                  onZoomChange={setZoom}
+                />
+              </div>
+
+              <div className="p-6 bg-vasta-surface flex flex-col gap-4 z-10">
+                <div className="flex items-center gap-2">
+                  <span className="text-xs font-bold text-vasta-muted">Zoom</span>
+                  <input
+                    type="range"
+                    value={zoom}
+                    min={1}
+                    max={3}
+                    step={0.1}
+                    aria-labelledby="Zoom"
+                    onChange={(e) => setZoom(Number(e.target.value))}
+                    className="w-full h-1 bg-vasta-surface-soft rounded-lg appearance-none cursor-pointer accent-vasta-primary"
+                  />
+                </div>
+                <div className="flex gap-3">
+                  <button
+                    onClick={() => setIsCropOpen(false)}
+                    className="flex-1 py-3 rounded-xl font-bold text-sm border border-vasta-border text-vasta-text hover:bg-vasta-surface-soft"
+                  >
+                    Cancelar
+                  </button>
+                  <button
+                    onClick={handleCropConfirm}
+                    disabled={uploading}
+                    className="flex-1 py-3 rounded-xl font-bold text-sm bg-vasta-primary text-white hover:bg-vasta-primary-soft flex justify-center items-center gap-2"
+                  >
+                    {uploading ? (
+                      <Loader2 className="animate-spin" size={16} />
+                    ) : (
+                      <Check size={16} />
+                    )}
+                    Salvar Foto
+                  </button>
+                </div>
               </div>
             </div>
           </div>
-        </div>
-      )}
-    </div>
+        )
+      }
+
+      {/* Color Picker Modal */}
+      <ColorPickerModal
+        isOpen={isColorPickerOpen}
+        onClose={() => setIsColorPickerOpen(false)}
+        currentColor={settings.accentColor}
+        onColorChange={(color) => updateSettings({ accentColor: color })}
+      />
+    </div >
   );
 }

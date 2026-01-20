@@ -25,7 +25,7 @@ import { useAuth } from "../../lib/AuthContext"
 
 // Types for Appearance
 export type LinkStyle = 'glass' | 'solid' | 'outline'
-export type SiteTheme = 'adaptive' | 'dark' | 'light'
+export type SiteTheme = 'adaptive' | 'dark' | 'light' | 'neo' | 'noir' | 'bento' | 'custom'
 
 interface AppearanceSettings {
   profileImage: string | null
@@ -518,7 +518,7 @@ function PreviewMockup({ settings }: { settings: AppearanceSettings }) {
           )}
           <div className="absolute inset-0 bg-black/10" />
           {settings.coverImageCredit && (
-            <div className="absolute bottom-2 right-2 px-1.5 py-0.5 bg-black/40 backdrop-blur-md rounded text-[7px] text-white/70 pointer-events-auto z-20">
+            <div className="absolute top-2 right-2 px-1.5 py-0.5 bg-black/40 backdrop-blur-md rounded text-[7px] text-white/70 pointer-events-auto z-20">
               {settings.coverImageCredit.includes('|') ? (
                 <>
                   Photo by{" "}
