@@ -17,7 +17,8 @@ func NewPostgresConnection() (*gorm.DB, error) {
 	}
 
 	config := &gorm.Config{
-		Logger: logger.Default.LogMode(logger.Info),
+		Logger:      logger.Default.LogMode(logger.Info),
+		PrepareStmt: false, // Disabling prepared statements for Pooler compatibility
 	}
 
 	db, err := gorm.Open(postgres.Open(dsn), config)
