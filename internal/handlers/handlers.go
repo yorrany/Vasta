@@ -86,7 +86,6 @@ func (h *Handler) CreateAppointment(c echo.Context) error {
 
 // GetSlots returns available slots (Using SlotGenerator)
 func (h *Handler) GetSlots(c echo.Context) error {
-	offerID := c.QueryParam("offer_id") // Convert to uint64... logic omitted for brevity
 	dateStr := c.QueryParam("date")
 	
 	date, err := time.Parse("2006-01-02", dateStr)
