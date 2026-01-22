@@ -90,8 +90,9 @@ export default function LoginPage() {
   }
 
   const handleOAuth = async (provider: 'google' | 'linkedin' | 'github' | 'facebook') => {
-    // Ensure we are redirecting to the correct domain (localhost in dev, production url in prod)
-    const redirectTo = `${window.location.origin}/auth/callback`
+    // Force localhost in development to avoid IP/Origin mismatches with Supabase Allow List
+    const origin = process.env.NODE_ENV === 'development' ? 'http://localhost:3000' : window.location.origin;
+    const redirectTo = `${origin}/auth/callback`;
 
     await supabase.auth.signInWithOAuth({
       provider,
