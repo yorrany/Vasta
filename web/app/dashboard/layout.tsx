@@ -64,6 +64,7 @@ export const useAppearance = () => {
 interface ConfirmOptions {
   title: string
   description: string
+  content?: ReactNode
   confirmText?: string
   cancelText?: string
   variant?: 'danger' | 'info'
@@ -283,6 +284,11 @@ export default function DashboardLayout({ children }: Props) {
                       <h3 className="text-lg font-bold text-vasta-text">{dialogConfig.title}</h3>
                       <p className="text-sm text-vasta-muted mt-2">{dialogConfig.description}</p>
                     </div>
+                    {dialogConfig.content && (
+                      <div className="py-2 flex justify-center w-full">
+                        {dialogConfig.content}
+                      </div>
+                    )}
                     <div className="grid grid-cols-2 gap-3 pt-2">
                       <button
                         onClick={() => setDialogOpen(false)}
@@ -378,7 +384,19 @@ export default function DashboardLayout({ children }: Props) {
                           description: "Escaneie para acessar seu perfil instantaneamente.",
                           variant: 'info',
                           confirmText: "Fechar",
+                          cancelText: " ",
                           onConfirm: () => { },
+                          content: (
+                            <div className="p-4 bg-white rounded-xl border border-vasta-border shadow-inner flex justify-center w-full">
+                              <QRCodeSVG
+                                value={`https://vasta.pro/${settings.username}`}
+                                size={200}
+                                bgColor="#FFFFFF"
+                                fgColor="#000000"
+                                level="L"
+                              />
+                            </div>
+                          )
                         })}
                         className="w-full flex items-center justify-center gap-2 rounded-xl border border-vasta-border bg-vasta-surface py-2 text-[11px] font-bold text-vasta-muted hover:text-vasta-text hover:bg-vasta-border/30 transition-all"
                       >
