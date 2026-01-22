@@ -18,9 +18,14 @@ export async function GET() {
     Authorization: apiKey,
   };
 
+  // Helper para randomizar página (1 a 20)
+  const randomPage = () => Math.floor(Math.random() * 20) + 1;
+
   const fetchPexels = async (query: string, count: number) => {
     try {
-        const res = await fetch(`https://api.pexels.com/v1/search?query=${encodeURIComponent(query)}&per_page=${count}&orientation=portrait`, { headers });
+        // Adiciona &page=random para variar os resultados
+        const page = randomPage();
+        const res = await fetch(`https://api.pexels.com/v1/search?query=${encodeURIComponent(query)}&per_page=${count}&page=${page}&orientation=portrait`, { headers });
         if (!res.ok) throw new Error(`Pexels Error: ${res.status}`);
         const data = await res.json();
         return data.photos?.map((p: any) => ({
@@ -34,11 +39,11 @@ export async function GET() {
     }
   };
 
-  // Buscando categorias específicas para o Hero
+  // Buscando categorias com queries mais refinadas e estéticas
   const [portraits, banners, products] = await Promise.all([
-    fetchPexels('professional headshot portrait', 8), // Fotos de perfil
-    fetchPexels('abstract gradient vibrant wallpaper', 8), // Banner do celular
-    fetchPexels('software code ui design mockup', 8) // Produtos/Cards
+    fetchPexels('creative professional portrait lighting', 10), 
+    fetchPexels('abstract dark neon gradient 3d render', 10), // Termos ajustados para o estilo "Vasta"
+    fetchPexels('minimalist tech desk setup dark mode', 10) 
   ]);
 
   return NextResponse.json({
