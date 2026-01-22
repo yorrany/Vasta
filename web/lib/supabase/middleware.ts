@@ -39,13 +39,13 @@ export async function updateSession(request: NextRequest) {
   } = await supabase.auth.getUser();
 
   // Protected Routes Logic
-  // if (request.nextUrl.pathname.startsWith("/dashboard") && !user) {
-  //   return NextResponse.redirect(new URL("/login", request.url));
-  // }
+  if (request.nextUrl.pathname.startsWith("/dashboard") && !user) {
+     return NextResponse.redirect(new URL("/login", request.url));
+  }
 
-  // if (request.nextUrl.pathname === "/" && user) {
-  //   return NextResponse.redirect(new URL("/dashboard", request.url));
-  // }
+  if ((request.nextUrl.pathname === "/" || request.nextUrl.pathname === "/login") && user) {
+     return NextResponse.redirect(new URL("/dashboard", request.url));
+  }
 
   return response;
 }
