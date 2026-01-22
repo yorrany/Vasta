@@ -90,10 +90,13 @@ export default function LoginPage() {
   }
 
   const handleOAuth = async (provider: 'google' | 'linkedin' | 'github' | 'facebook') => {
+    // Ensure we are redirecting to the correct domain (localhost in dev, production url in prod)
+    const redirectTo = `${window.location.origin}/auth/callback`
+
     await supabase.auth.signInWithOAuth({
       provider,
       options: {
-        redirectTo: `${window.location.origin}/auth/callback`,
+        redirectTo,
       }
     })
   }

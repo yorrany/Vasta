@@ -108,10 +108,14 @@ export function AuthModal() {
 
 
   const handleOAuth = async (provider: 'google' | 'linkedin' | 'github' | 'facebook') => {
+    // Ensure we are redirecting to the correct domain (localhost in dev, production url in prod)
+    const redirectTo = `${window.location.origin}/auth/callback`
+    console.log("OAuth Redirecting to:", redirectTo)
+
     await supabase.auth.signInWithOAuth({
       provider,
       options: {
-        redirectTo: `${window.location.origin}/auth/callback`,
+        redirectTo,
       }
     })
   }
