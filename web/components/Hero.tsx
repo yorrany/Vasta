@@ -161,9 +161,8 @@ export function Hero() {
     const timer = setTimeout(async () => {
       setChecking(true);
       try {
-        const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
         const res = await fetch(
-          `${apiUrl}/profiles/check_username?username=${username.toLowerCase()}`
+          `/api/profiles/check_username?username=${username.toLowerCase()}`
         );
 
         if (!res.ok) throw new Error("API Offline");

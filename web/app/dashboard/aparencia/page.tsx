@@ -66,10 +66,8 @@ export default function AparenciaPage() {
     const timer = setTimeout(async () => {
       setChecking(true);
       try {
-        const apiUrl =
-          process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
         const res = await fetch(
-          `${apiUrl}/profiles/check_username?username=${usernameInput.toLowerCase()}`,
+          `/api/profiles/check_username?username=${usernameInput.toLowerCase()}`,
         );
 
         if (!res.ok) throw new Error("API Offline");
@@ -348,7 +346,7 @@ export default function AparenciaPage() {
               )}
               <div className="absolute inset-0 bg-black/20 opacity-0 transition-opacity group-hover:opacity-100 flex items-center justify-center gap-2">
                 <button
-                  onClick={() => setIsUnsplashOpen(true)}
+                  onClick={() => setIsPexelsOpen(true)}
                   className="rounded-full bg-white/90 px-4 py-2 text-xs font-bold text-black hover:bg-white shadow-lg flex items-center gap-2"
                 >
                   <Search size={14} /> Buscar no Pexels
