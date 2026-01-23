@@ -23,7 +23,11 @@ export default function OnboardingPage() {
     const [loading, setLoading] = useState(false)
     const [authLoading, setAuthLoading] = useState(true)
     const [checkingUsername, setCheckingUsername] = useState(false)
-    const [usernameAvailable, setUsernameAvailable] = useState<boolean | null>(null)
+    const [availability, setAvailability] = useState<{
+        available: boolean;
+        message: string;
+        suggestions?: string[];
+    } | null>(null);
 
     const [formData, setFormData] = useState({
         username: "",
@@ -60,21 +64,43 @@ export default function OnboardingPage() {
         checkUser()
     }, [])
 
-    const checkUsername = async (val: string) => {
-        if (val.length < 3) {
-            setUsernameAvailable(null)
-            return
+    useEffect(() => {
+        if (formData.username.length < 3) {
+            setAvailability(null);
+            return;
         }
-        setCheckingUsername(true)
-        const { data } = await supabase
-            .from('profiles')
-            .select('username')
-            .eq('username', val)
-            .maybeSingle()
 
-        setUsernameAvailable(!data)
-        setCheckingUsername(false)
-    }
+        const timer = setTimeout(async () => {
+            setCheckingUsername(true);
+            try {
+                const res = await fetch(
+                    `/api/profiles/check_username?username=${formData.username.toLowerCase()}`
+                );
+
+                if (!res.ok) throw new Error("API Offline");
+
+                const data = await res.json();
+
+                if (data.available === false) {
+                    data.suggestions = data.suggestions || [
+                        `${formData.username}pro`,
+                        `${formData.username}hq`,
+                        `sou${formData.username}`
+                    ];
+                }
+
+                setAvailability(data);
+            } catch (err) {
+                console.error("Error checking username:", err);
+                // Fail-safe
+                setAvailability({ available: true, message: "Disponível!" });
+            } finally {
+                setCheckingUsername(false);
+            }
+        }, 500);
+
+        return () => clearTimeout(timer);
+    }, [formData.username]);
 
     const handleNext = () => {
         if (step === 'USERNAME') setStep('BIO')
@@ -166,22 +192,39 @@ export default function OnboardingPage() {
                                         onChange={(e) => {
                                             const val = e.target.value.toLowerCase().replace(/[^a-z0-9]/g, '')
                                             setFormData(prev => ({ ...prev, username: val }))
-                                            checkUsername(val)
                                         }}
                                         placeholder="seunome"
                                         className="w-full rounded-2xl border border-slate-700 bg-slate-800/50 py-4 pl-[84px] pr-12 text-white font-bold focus:border-vasta-primary focus:ring-1 focus:ring-vasta-primary transition-all"
                                     />
                                     <div className="absolute right-4 top-1/2 -translate-y-1/2">
                                         {checkingUsername ? <Loader2 className="h-5 w-5 animate-spin text-slate-500" /> :
-                                            usernameAvailable === true ? <CheckCircle2 className="h-5 w-5 text-emerald-500" /> :
-                                                usernameAvailable === false ? <AlertCircle className="h-5 w-5 text-red-500" /> : null}
+                                            availability?.available === true ? <CheckCircle2 className="h-5 w-5 text-emerald-500" /> :
+                                                availability?.available === false ? <AlertCircle className="h-5 w-5 text-red-500" /> : null}
                                     </div>
                                 </div>
-                                {usernameAvailable === false && <p className="text-xs text-red-400 px-1">Este nome já está em uso. Tente outro.</p>}
+                                {availability?.available === false && (
+                                    <div className="space-y-3 animate-in fade-in slide-in-from-top-1 px-1">
+                                        <p className="text-xs text-red-400">Este nome já está em uso. Tente uma alternativa abaixo:</p>
+                                        {availability.suggestions && (
+                                            <div className="flex flex-wrap gap-2">
+                                                {availability.suggestions.map((suggestion) => (
+                                                    <button
+                                                        key={suggestion}
+                                                        onClick={() => setFormData(prev => ({ ...prev, username: suggestion }))}
+                                                        className="group flex items-center gap-1.5 rounded-full border border-slate-700 bg-slate-800/50 px-3 py-1.5 text-[10px] font-bold text-white transition-all hover:border-vasta-primary hover:text-vasta-primary hover:scale-105"
+                                                    >
+                                                        <Sparkles className="h-2.5 w-2.5 text-vasta-primary/40 group-hover:text-vasta-primary" />
+                                                        {suggestion}
+                                                    </button>
+                                                ))}
+                                            </div>
+                                        )}
+                                    </div>
+                                )}
 
                                 <button
                                     onClick={handleNext}
-                                    disabled={!usernameAvailable || checkingUsername}
+                                    disabled={!availability?.available || checkingUsername}
                                     className="w-full group flex items-center justify-center gap-2 rounded-2xl bg-white py-4 text-sm font-bold text-slate-950 transition-all hover:bg-slate-200 active:scale-[0.98] disabled:opacity-50"
                                 >
                                     Continuar
