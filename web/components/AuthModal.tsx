@@ -83,6 +83,7 @@ export function AuthModal() {
       setLoading(false)
     } else {
       router.refresh()
+      router.push("/dashboard")
       closeAuthModal()
     }
   }
@@ -144,6 +145,7 @@ export function AuthModal() {
       setLoading(false)
     } else if (data.session) {
       router.refresh()
+      router.push("/dashboard")
       closeAuthModal()
     } else {
       setStep('SUCCESS')

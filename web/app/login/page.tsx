@@ -29,6 +29,17 @@ export default function LoginPage() {
   const supabase = createClient()
   const router = useRouter()
 
+  // Auto-redirect if user is already logged in
+  useEffect(() => {
+    const checkUser = async () => {
+      const { data: { session } } = await supabase.auth.getSession()
+      if (session) {
+        router.push("/dashboard")
+      }
+    }
+    checkUser()
+  }, [supabase, router])
+
   const handleContinueEmail = async (e: React.FormEvent) => {
     e.preventDefault()
     setLoading(true)
@@ -67,6 +78,31 @@ export default function LoginPage() {
       setError(loginError.message === "Invalid login credentials" ? "Senha incorreta. Tente novamente." : loginError.message)
       setLoading(false)
     } else {
+      router.refresh()
+      router.push("/dashboard")
+    }
+  }
+
+  const handleSignUp = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setLoading(true)
+    setError(null)
+
+    const { error: signUpError } = await supabase.auth.signUp({
+      email,
+      password,
+      options: {
+        emailRedirectTo: `${window.location.origin}/auth/callback`,
+      }
+    })
+
+    if (signUpError) {
+      setError(signUpError.message)
+      setLoading(false)
+    } else {
+      // If email confirmation is enabled, they might see SUCCESS
+      // If auto-confirm is enabled, it follows the same path as login
+      router.refresh()
       router.push("/dashboard")
     }
   }
@@ -283,10 +319,11 @@ export default function LoginPage() {
                     />
                   </div>
                   <button
-                    onClick={handleLogin}
-                    className="w-full rounded-xl bg-white py-2.5 text-xs font-bold text-slate-950 hover:bg-slate-200"
+                    onClick={handleSignUp}
+                    disabled={loading}
+                    className="w-full rounded-xl bg-white py-2.5 text-xs font-bold text-slate-950 hover:bg-slate-200 disabled:opacity-50"
                   >
-                    Criar conta gratuita
+                    {loading ? <Loader2 className="h-4 w-4 animate-spin mx-auto" /> : "Criar conta gratuita"}
                   </button>
                 </div>
               </div>
