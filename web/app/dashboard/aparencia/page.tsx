@@ -21,6 +21,7 @@ import {
 import { createClient } from "../../../lib/supabase/client";
 import { useAuth } from "../../../lib/AuthContext";
 import { ColorPickerModal } from "../../../components/ui/ColorPickerModal";
+import InstagramSettings from "@/components/instagram/InstagramSettings"; // Integration
 
 import { useAppearance, useConfirm } from "../layout";
 
@@ -602,6 +603,37 @@ export default function AparenciaPage() {
               </div>
             </div>
           </div>
+        </div>
+      </section>
+
+      {/* Integrações Sociais (Instagram) */}
+      <section className="animate-fade-in [animation-delay:180ms] space-y-4">
+        <div className="flex items-center gap-2 px-1">
+          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-vasta-primary/10 text-vasta-primary">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="18"
+              height="18"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              className="lucide lucide-instagram"
+            >
+              <rect width="20" height="20" x="2" y="2" rx="5" ry="5" />
+              <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" />
+              <line x1="17.5" x2="17.51" y1="6.5" y2="6.5" />
+            </svg>
+          </div>
+          <h3 className="text-sm font-bold text-vasta-text uppercase tracking-wider">
+            Integrações Sociais
+          </h3>
+        </div>
+
+        <div className="rounded-[2.5rem] border border-vasta-border bg-vasta-surface p-6 shadow-card">
+          <InstagramSettings />
         </div>
       </section>
 

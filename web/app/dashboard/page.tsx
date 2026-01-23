@@ -12,7 +12,8 @@ import {
    TrendingUp,
    CreditCard,
    Copy,
-   AlertCircle
+   AlertCircle,
+   Instagram
 } from "lucide-react"
 import { createClient } from "../../lib/supabase/client"
 import { useAuth } from "../../lib/AuthContext"
@@ -192,6 +193,23 @@ export default function DashboardHome() {
                      {copied && <div className="absolute inset-0 bg-emerald-500/10 animate-pulse" />}
                   </button>
                </div>
+
+               {/* Instagram Integration Card - Highlight */}
+               <a href="/dashboard/aparencia" className="bg-gradient-to-r from-pink-500/10 to-purple-500/10 p-5 rounded-[1.5rem] border border-pink-500/20 hover:border-pink-500/40 hover:shadow-lg hover:shadow-pink-500/5 transition-all group flex items-center justify-between relative overflow-hidden">
+                  <div className="absolute inset-0 bg-white/40 dark:bg-black/0 opacity-0 group-hover:opacity-100 transition-opacity" />
+                  <div className="flex items-center gap-4 relative z-10">
+                     <div className="h-10 w-10 rounded-full bg-gradient-to-tr from-yellow-400 via-red-500 to-purple-500 text-white flex items-center justify-center shadow-md">
+                        <Instagram size={20} />
+                     </div>
+                     <div>
+                        <p className="font-bold text-sm text-vasta-text leading-tight">Conectar Instagram</p>
+                        <p className="text-[10px] text-vasta-muted mt-0.5 group-hover:text-vasta-primary transition-colors">Exiba seus posts no perfil</p>
+                     </div>
+                  </div>
+                  <div className="h-8 w-8 rounded-full bg-vasta-surface border border-vasta-border flex items-center justify-center text-vasta-muted group-hover:text-vasta-text transition-colors relative z-10">
+                     <ArrowUpRight size={16} />
+                  </div>
+               </a>
 
                {/* Premium Banner (Compact) */}
                <div className="flex-1 relative overflow-hidden rounded-[2rem] bg-gradient-to-br from-stone-900 via-stone-800 to-black p-6 text-white shadow-xl flex flex-col justify-center gap-4 group">
