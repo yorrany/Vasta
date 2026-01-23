@@ -62,3 +62,7 @@ export async function getMyInstagramFeed() {
     
     return await getInstagramFeed(user.id);
 }
+
+export async function getPublicInstagramFeed(userId: string) {
+    return await getInstagramFeed(userId);
+}
