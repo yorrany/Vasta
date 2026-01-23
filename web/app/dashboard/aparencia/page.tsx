@@ -114,42 +114,17 @@ export default function AparenciaPage() {
 
     setIsSearching(true);
     try {
-      const accessKey = process.env.NEXT_PUBLIC_PEXELS_API_KEY;
-      console.log("Pexels Search Debug:", query);
+      console.log("Pexels Internal Search Debug:", query);
 
-      const res = await fetch(
-        `https://api.pexels.com/v1/search?query=${query}&per_page=12`,
-        {
-          headers: {
-            Authorization: accessKey || ''
-          }
-        }
-      );
+      const res = await fetch(`/api/pexels?q=${encodeURIComponent(query)}`);
 
       if (!res.ok) {
-        console.error("Pexels API Error:", res.status, res.statusText);
+        console.error("Internal Pexels API Error:", res.status, res.statusText);
         return;
       }
 
       const data = await res.json();
-      // Map Pexels structure to match what UI expects (or update UI, but mapping is safer)
-      // Unsplash: photo.urls.regular, photo.urls.small, photo.user.name, photo.user.username
-      // Pexels: photo.src.large, photo.src.medium, photo.photographer, photo.photographer_url (extract user)
-
-      const mappedResults = (data.photos || []).map((p: any) => ({
-        id: p.id,
-        urls: {
-          regular: p.src.large2x, // High res for cover
-          small: p.src.medium
-        },
-        user: {
-          name: p.photographer,
-          url: p.photographer_url // Store full URL
-        },
-        alt_description: p.alt
-      }));
-
-      setPexelsResult(mappedResults);
+      setPexelsResult(data.photos || []);
     } catch (error) {
       console.error("Error searching Pexels:", error);
     } finally {
