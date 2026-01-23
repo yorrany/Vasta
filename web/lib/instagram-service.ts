@@ -96,7 +96,19 @@ const fetchInstagramMedia = async (accessToken: string, instagramBusinessId: str
 };
 
 export async function getInstagramFeed(userId: string): Promise<InstagramMedia[] | null> {
-  const supabase = await createClient();
+  // Use Service Role to bypass RLS, because this might be called by a public visitor checking a profile
+  // and the 'instagram_connections' table is likely private to the user.
+  let supabase;
+  
+  if (process.env.SUPABASE_SERVICE_ROLE_KEY) {
+      const { createClient: createClientJS } = require('@supabase/supabase-js');
+      supabase = createClientJS(
+          process.env.NEXT_PUBLIC_SUPABASE_URL, 
+          process.env.SUPABASE_SERVICE_ROLE_KEY
+      );
+  } else {
+      supabase = await createClient();
+  }
   
   if (!supabase) {
     console.error('Supabase client failed to initialize in getInstagramFeed');
@@ -106,7 +118,7 @@ export async function getInstagramFeed(userId: string): Promise<InstagramMedia[]
   // Debug Log
   console.log(`[Instagram Service] Fetching feed for user: ${userId}`);
 
-  // 1. Get Connection Details with Token
+  // 1. Get Connection Details with Token (Bypassing RLS if using Service Role)
   const { data: connection, error: dbError } = await supabase
     .from('instagram_connections')
     .select('access_token, instagram_user_id')
@@ -115,9 +127,15 @@ export async function getInstagramFeed(userId: string): Promise<InstagramMedia[]
 
   if (dbError || !connection) {
     console.log('[Instagram Service] No connection found or DB Error:', dbError);
+    // If error is "PGRST116" (JSON object), it means no rows (not found).
+    if (dbError && dbError.code !== 'PGRST116') {
+         // It's a real DB error
+         throw new Error(`Database Error: ${dbError.message}`);
+    }
     return null;
   }
 
+  // ... rest of the function remains same ...
   console.log('[Instagram Service] Connection found. ID:', connection.instagram_user_id);
 
   try {
@@ -133,7 +151,7 @@ export async function getInstagramFeed(userId: string): Promise<InstagramMedia[]
       .eq('user_id', userId);
 
     // 4. Merge Data
-    const linkMap = new Map(links?.map(l => [l.instagram_media_id, l.target_url]) || []);
+    const linkMap = new Map(links?.map((l: any) => [l.instagram_media_id, l.target_url]) || []);
 
     const mergedMedia = mediaItems.map(item => ({
       ...item,
