@@ -5,7 +5,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { Instagram, LayoutGrid, GalleryHorizontal, Link as LinkIcon } from 'lucide-react';
 import { getPublicInstagramFeed } from '@/actions/instagram';
-import { getInstagramSettings } from '@/lib/instagram-service'; // Wait, this is server-side only?
+
 // We need a public action for settings too if we want to honor "display_mode".
 // For MVP, let's assume Grid if not fetched, or create `getPublicInstagramSettings`.
 // Actually, let's just use a hardcoded grid for now to test, OR fetch settings via action.
@@ -48,7 +48,7 @@ export function InstagramFeedSection({ userId, theme }: { userId: string, theme:
 
     if (loading) return null;
     if (errorMsg) return <div className="text-red-500 text-center py-4">Erro Instagram: {errorMsg}</div>;
-    if (!feed || feed.length === 0) return <div className="text-gray-500 text-center py-4">Feed vazio ou sem permissão.</div>;
+    if (!feed || feed.length === 0) return null; // Hide section if no content or not connected
 
     // Default to Grid for Public Profile for now
     // We can enhance later to respect settings
