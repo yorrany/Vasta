@@ -66,12 +66,17 @@ export default function InstagramSettings() {
     }
 
     const handleConnect = async () => {
-        // Redirects to Instagram
-        await initiateInstagramAuth();
+        try {
+            // Redirects to Instagram
+            await initiateInstagramAuth();
+        } catch (error: any) {
+            console.error("Connection Error:", error);
+            alert(error.message || 'Erro ao iniciar conexão com Instagram.');
+        }
     };
 
     const handleDisconnect = async () => {
-        if (!confirm('Are you sure you want to disconnect Instagram?')) return;
+        if (!confirm('Tem certeza que deseja desconectar o Instagram?')) return;
 
         startTransition(async () => {
             await disconnectIntegration();
@@ -117,16 +122,16 @@ export default function InstagramSettings() {
                 <div className="w-16 h-16 bg-pink-100 dark:bg-pink-900/20 rounded-full flex items-center justify-center mb-2">
                     <Instagram className="w-8 h-8 text-pink-600 dark:text-pink-400" />
                 </div>
-                <h3 className="text-xl font-semibold">Connect Instagram</h3>
+                <h3 className="text-xl font-semibold">Conectar Instagram</h3>
                 <p className="text-gray-500 dark:text-gray-400 max-w-sm">
-                    Display your photos, reels, or a link to your profile directly on your page.
+                    Exiba suas fotos, reels ou um link para seu perfil diretamente na sua página.
                 </p>
                 <button
                     onClick={handleConnect}
                     className="bg-black dark:bg-white text-white dark:text-black px-6 py-2.5 rounded-full font-medium hover:opacity-90 transition-opacity flex items-center gap-2"
                 >
                     <Instagram className="w-4 h-4" />
-                    Connect with Instagram
+                    Conectar com Instagram
                 </button>
             </div>
         );
@@ -138,7 +143,7 @@ export default function InstagramSettings() {
             <div className="flex items-center justify-between p-4 border border-gray-200 dark:border-gray-800 rounded-xl bg-white dark:bg-gray-900">
                 <div className="flex items-center gap-3">
                     <div className={`w-2.5 h-2.5 rounded-full ${isConnected ? 'bg-green-500' : 'bg-red-500'}`} />
-                    <span className="font-medium">Instagram Connected</span>
+                    <span className="font-medium">Instagram Conectado</span>
                     {feed[0]?.username && <span className="text-gray-500">@{feed[0].username}</span>}
                 </div>
                 <button
@@ -147,13 +152,13 @@ export default function InstagramSettings() {
                     className="text-red-500 hover:text-red-600 text-sm font-medium flex items-center gap-1.5 px-3 py-1.5 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors"
                 >
                     <Trash2 className="w-4 h-4" />
-                    Disconnect
+                    Desconectar
                 </button>
             </div>
 
             {/* Display Mode Selector */}
             <div className="space-y-4">
-                <h3 className="text-lg font-medium">Display Mode</h3>
+                <h3 className="text-lg font-medium">Modo de Exibição</h3>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                     <button
                         onClick={() => handleModeChange('grid')}
@@ -165,8 +170,8 @@ export default function InstagramSettings() {
                         <div className="mb-3 w-10 h-10 rounded-lg bg-gray-100 dark:bg-gray-700 flex items-center justify-center">
                             <LayoutGrid className="w-5 h-5" />
                         </div>
-                        <div className="font-medium">Grid</div>
-                        <div className="text-sm text-gray-500 mt-1">3x3 Layout</div>
+                        <div className="font-medium">Grade</div>
+                        <div className="text-sm text-gray-500 mt-1">Layout 3x3</div>
                         {displayMode === 'grid' && (
                             <div className="absolute top-4 right-4 text-green-500"><CheckCircle className="w-5 h-5" /></div>
                         )}
@@ -182,8 +187,8 @@ export default function InstagramSettings() {
                         <div className="mb-3 w-10 h-10 rounded-lg bg-gray-100 dark:bg-gray-700 flex items-center justify-center">
                             <GalleryHorizontal className="w-5 h-5" />
                         </div>
-                        <div className="font-medium">Gallery</div>
-                        <div className="text-sm text-gray-500 mt-1">Horizontal Scroll</div>
+                        <div className="font-medium">Galeria</div>
+                        <div className="text-sm text-gray-500 mt-1">Rolagem Horizontal</div>
                         {displayMode === 'gallery' && (
                             <div className="absolute top-4 right-4 text-green-500"><CheckCircle className="w-5 h-5" /></div>
                         )}
@@ -199,8 +204,8 @@ export default function InstagramSettings() {
                         <div className="mb-3 w-10 h-10 rounded-lg bg-gray-100 dark:bg-gray-700 flex items-center justify-center">
                             <LinkIcon className="w-5 h-5" />
                         </div>
-                        <div className="font-medium">Simple Link</div>
-                        <div className="text-sm text-gray-500 mt-1">Button Only</div>
+                        <div className="font-medium">Botão Simples</div>
+                        <div className="text-sm text-gray-500 mt-1">Link direto</div>
                         {displayMode === 'simple_link' && (
                             <div className="absolute top-4 right-4 text-green-500"><CheckCircle className="w-5 h-5" /></div>
                         )}
@@ -212,8 +217,8 @@ export default function InstagramSettings() {
             {displayMode === 'grid' && (
                 <div className="space-y-4 animate-in fade-in slide-in-from-bottom-4 duration-500">
                     <div className="flex items-center justify-between">
-                        <h3 className="text-lg font-medium">Tag Content</h3>
-                        <span className="text-sm text-gray-500">Tap a post to add a custom link</span>
+                        <h3 className="text-lg font-medium">Conteúdo da Grade</h3>
+                        <span className="text-sm text-gray-500">Toque em um post para adicionar link</span>
                     </div>
 
                     <div className="grid grid-cols-3 gap-2 md:gap-4 max-w-md mx-auto md:mx-0">
@@ -238,7 +243,7 @@ export default function InstagramSettings() {
                                 {/* Hover Overlay */}
                                 <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
                                     <span className="text-white text-xs font-medium px-2 py-1 bg-white/20 backdrop-blur-md rounded-full">
-                                        {post.custom_link ? 'Edit Link' : 'Add Link'}
+                                        {post.custom_link ? 'Editar Link' : 'Add Link'}
                                     </span>
                                 </div>
                             </button>
@@ -252,7 +257,7 @@ export default function InstagramSettings() {
                 <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm animate-in fade-in">
                     <div className="bg-white dark:bg-gray-900 rounded-2xl w-full max-w-sm shadow-2xl p-6 space-y-4 animate-in zoom-in-95 duration-200">
                         <div className="flex justify-between items-start">
-                            <h3 className="text-lg font-semibold">Add Link to Post</h3>
+                            <h3 className="text-lg font-semibold">Adicionar Link ao Post</h3>
                             <button onClick={() => setSelectedPost(null)} className="text-gray-400 hover:text-gray-600">
                                 <X className="w-5 h-5" />
                             </button>
@@ -268,15 +273,15 @@ export default function InstagramSettings() {
                         </div>
 
                         <div className="space-y-2">
-                            <label className="text-sm font-medium">Target URL</label>
+                            <label className="text-sm font-medium">URL de Destino</label>
                             <input
                                 type="url"
-                                placeholder="https://myshop.com/product/123"
+                                placeholder="https://minhaloja.com.br/produto/123"
                                 className="w-full px-4 py-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-transparent focus:ring-2 ring-black dark:ring-white outline-none"
                                 value={customLinkUrl}
                                 onChange={(e) => setCustomLinkUrl(e.target.value)}
                             />
-                            <p className="text-xs text-gray-500">Leave empty to use the Instagram post URL.</p>
+                            <p className="text-xs text-gray-500">Deixe vazio para usar o link original do Instagram.</p>
                         </div>
 
                         <div className="flex gap-3 pt-2">
@@ -284,13 +289,13 @@ export default function InstagramSettings() {
                                 onClick={() => setSelectedPost(null)}
                                 className="flex-1 px-4 py-2 rounded-lg border border-gray-200 dark:border-gray-800 hover:bg-gray-50 dark:hover:bg-gray-800 font-medium transition-colors"
                             >
-                                Cancel
+                                Cancelar
                             </button>
                             <button
                                 onClick={saveLink}
                                 className="flex-1 px-4 py-2 rounded-lg bg-black dark:bg-white text-white dark:text-black font-medium hover:opacity-90 transition-opacity"
                             >
-                                Save Link
+                                Salvar Link
                             </button>
                         </div>
                     </div>

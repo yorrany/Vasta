@@ -632,7 +632,7 @@ export default function AparenciaPage() {
           </h3>
         </div>
 
-        <div className="rounded-[2.5rem] border border-vasta-border bg-vasta-surface p-6 shadow-card">
+        <div id="instagram-integration" className="rounded-[2.5rem] border border-vasta-border bg-vasta-surface p-6 shadow-card">
           <InstagramSettings />
         </div>
       </section>

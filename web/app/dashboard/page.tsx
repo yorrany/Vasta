@@ -195,7 +195,7 @@ export default function DashboardHome() {
                </div>
 
                {/* Instagram Integration Card - Highlight */}
-               <a href="/dashboard/aparencia" className="bg-gradient-to-r from-pink-500/10 to-purple-500/10 p-5 rounded-[1.5rem] border border-pink-500/20 hover:border-pink-500/40 hover:shadow-lg hover:shadow-pink-500/5 transition-all group flex items-center justify-between relative overflow-hidden">
+               <a href="/dashboard/aparencia#instagram-integration" className="bg-gradient-to-r from-pink-500/10 to-purple-500/10 p-5 rounded-[1.5rem] border border-pink-500/20 hover:border-pink-500/40 hover:shadow-lg hover:shadow-pink-500/5 transition-all group flex items-center justify-between relative overflow-hidden">
                   <div className="absolute inset-0 bg-white/40 dark:bg-black/0 opacity-0 group-hover:opacity-100 transition-opacity" />
                   <div className="flex items-center gap-4 relative z-10">
                      <div className="h-10 w-10 rounded-full bg-gradient-to-tr from-yellow-400 via-red-500 to-purple-500 text-white flex items-center justify-center shadow-md">
