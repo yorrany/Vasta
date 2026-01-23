@@ -80,9 +80,10 @@ const fetchInstagramMedia = async (accessToken: string, instagramBusinessId: str
   } as any);
 
   if (!res.ok) {
-    const error = await res.json();
-    console.error('Instagram API Error:', error);
-    throw new Error('Failed to fetch Instagram media');
+    const errorBody = await res.text();
+    console.error('[Instagram Service] API Error Status:', res.status);
+    console.error('[Instagram Service] API Error Body:', errorBody);
+    throw new Error(`Failed to fetch Instagram media: ${res.status}`);
   }
 
   const data = await res.json();
