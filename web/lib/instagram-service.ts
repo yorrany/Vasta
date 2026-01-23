@@ -69,6 +69,9 @@ const fetchInstagramMedia = async (accessToken: string, instagramBusinessId: str
   
   const url = `https://graph.facebook.com/v19.0/${instagramBusinessId}/media?fields=${fields}&access_token=${accessToken}&limit=9${proofParam}`;
 
+  // DEBUG LOGS
+  console.log('[Instagram Service] Media Fetch URL:', url);
+
   const res = await fetch(url, {
     next: { 
       revalidate: 14400, // 4 hours
@@ -83,6 +86,11 @@ const fetchInstagramMedia = async (accessToken: string, instagramBusinessId: str
   }
 
   const data = await res.json();
+  console.log('[Instagram Service] Media Response Data (count):', data.data?.length);
+  if (data.data?.length === 0) {
+      console.log('[Instagram Service] Full Response Body:', JSON.stringify(data));
+  }
+  
   return data.data as InstagramMedia[];
 };
 
