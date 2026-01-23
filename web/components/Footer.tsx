@@ -146,8 +146,9 @@ export function Footer() {
 
                     <div className="flex flex-col gap-4">
                         <h4 className="font-semibold text-vasta-text">Legal</h4>
-                        <Link href="/legal/privacidade" className="text-sm text-vasta-muted hover:text-vasta-primary">Privacidade</Link>
-                        <Link href="/legal/termos" className="text-sm text-vasta-muted hover:text-vasta-primary">Termos de Uso</Link>
+                        <Link href="/privacy" className="text-sm text-vasta-muted hover:text-vasta-primary">Privacidade</Link>
+                        <Link href="/terms" className="text-sm text-vasta-muted hover:text-vasta-primary">Termos de Uso</Link>
+                        <Link href="/data-deletion" className="text-sm text-vasta-muted hover:text-vasta-primary">Exclusão de Dados</Link>
                         <Link href="/legal/lgpd" className="text-sm text-vasta-muted hover:text-vasta-primary">Padrão LGPD</Link>
                         <Link href="/legal/cookies" className="text-sm text-vasta-muted hover:text-vasta-primary">Cookies</Link>
                     </div>
