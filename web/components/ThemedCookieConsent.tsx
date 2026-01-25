@@ -1,7 +1,7 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import { CookieConsent } from "../CookieConsent"
+import { CookieConsent } from "./CookieConsent"
 
 interface PublicPageData {
     accentColor?: string
