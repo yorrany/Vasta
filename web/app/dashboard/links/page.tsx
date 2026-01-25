@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useMemo } from "react"
 import {
   DndContext,
   closestCenter,
@@ -25,6 +25,8 @@ import { LinkModal } from "../../../components/links/LinkModal"
 import { AddLinkModal } from "../../../components/links/AddLinkModal"
 import { isValidUrl } from "../../../components/links/AddLinkModal/types"
 import { FormEditModal } from "../../../components/forms/FormEditModal"
+import { CollectionItem } from "../../../components/links/CollectionItem"
+import { CollectionEditModal } from "../../../components/collections/CollectionEditModal"
 
 type LinkItem = {
   id: number
@@ -68,6 +70,14 @@ function SortableLinkItem({ link, toggleActive, onEdit }: SortableItemProps) {
   } else if (link.url.startsWith('#form:')) {
     type = 'form'
     contentPreview = 'Formulário interativo'
+  } else if (link.url.startsWith('#collection:')) {
+    type = 'collection'
+    try {
+      const data = JSON.parse(link.url.replace('#collection:', ''))
+      contentPreview = data.description || 'Coleção de links'
+    } catch {
+      contentPreview = 'Coleção de links'
+    }
   }
 
   return (
@@ -90,6 +100,7 @@ function SortableLinkItem({ link, toggleActive, onEdit }: SortableItemProps) {
           {type === 'header' && <span className="px-1.5 py-0.5 rounded text-[10px] font-bold bg-indigo-500/10 text-indigo-500 border border-indigo-500/20 uppercase tracking-wider">Título</span>}
           {type === 'text' && <span className="px-1.5 py-0.5 rounded text-[10px] font-bold bg-zinc-500/10 text-zinc-500 border border-zinc-500/20 uppercase tracking-wider">Texto</span>}
           {type === 'form' && <span className="px-1.5 py-0.5 rounded text-[10px] font-bold bg-purple-500/10 text-purple-500 border border-purple-500/20 uppercase tracking-wider">📝 Formulário</span>}
+          {type === 'collection' && <span className="px-1.5 py-0.5 rounded text-[10px] font-bold bg-blue-500/10 text-blue-500 border border-blue-500/20 uppercase tracking-wider">📚 Coleção</span>}
           {type === 'link' && <span className="px-1.5 py-0.5 rounded text-[10px] font-bold bg-emerald-500/10 text-emerald-500 border border-emerald-500/20 uppercase tracking-wider">Link</span>}
 
           <div className="font-semibold text-vasta-text truncate text-sm flex-1 min-w-0">{link.title}</div>
@@ -140,6 +151,10 @@ export default function LinksPage() {
   // Form Edit Modal State
   const [isFormEditModalOpen, setIsFormEditModalOpen] = useState(false)
   const [editingFormId, setEditingFormId] = useState<number | null>(null)
+
+  // Collection Edit Modal State  
+  const [isCollectionEditModalOpen, setIsCollectionEditModalOpen] = useState(false)
+  const [editingCollection, setEditingCollection] = useState<LinkItem | null>(null)
 
   const supabase = createClient()
 
@@ -195,6 +210,58 @@ export default function LinksPage() {
     return () => window.removeEventListener('paste', handlePaste)
   }, []) // Empty dependency array = run once on mount
 
+  // Process collections and extract link IDs that are inside collections
+  const linksInCollections = useMemo(() => {
+    const linkIds = new Set<number>()
+    links.forEach(link => {
+      if (link.url.startsWith('#collection:')) {
+        try {
+          const collectionData = JSON.parse(link.url.replace('#collection:', ''))
+          collectionData.links?.forEach((id: number) => linkIds.add(id))
+        } catch {
+          // Invalid collection data
+        }
+      }
+    })
+    return linkIds
+  }, [links])
+
+  // Separate links into collections and standalone links
+  const { collections, standaloneLinks } = useMemo(() => {
+    const colls: LinkItem[] = []
+    const standalone: LinkItem[] = []
+
+    links.forEach(link => {
+      if (link.url.startsWith('#collection:')) {
+        colls.push(link)
+      } else if (!linksInCollections.has(link.id)) {
+        standalone.push(link)
+      }
+    })
+
+    return { collections: colls, standaloneLinks: standalone }
+  }, [links, linksInCollections])
+
+  // Get child links for a collection
+  const getCollectionLinks = (collection: LinkItem): LinkItem[] => {
+    try {
+      const collectionData = JSON.parse(collection.url.replace('#collection:', ''))
+      const linkIds = collectionData.links || []
+      return links.filter(link => linkIds.includes(link.id))
+    } catch {
+      return []
+    }
+  }
+
+  // Filter for display
+  const filteredStandaloneLinks = filter === 'all'
+    ? standaloneLinks
+    : standaloneLinks.filter(l => l.is_active)
+
+  const filteredCollections = filter === 'all'
+    ? collections
+    : collections.filter(c => c.is_active)
+
   const toggleActive = async (id: number, currentState: boolean) => {
     // Optimistic update
     setLinks(current =>
@@ -247,6 +314,13 @@ export default function LinksPage() {
   }
 
   const openEditModal = async (link: LinkItem) => {
+    // Check if this is a collection link
+    if (link.url.startsWith('#collection:')) {
+      setEditingCollection(link)
+      setIsCollectionEditModalOpen(true)
+      return
+    }
+
     // Check if this is a form link
     if (link.url.startsWith('#form:')) {
       // Fetch the form ID from the forms table
@@ -260,7 +334,7 @@ export default function LinksPage() {
         setEditingFormId(formData.id)
         setIsFormEditModalOpen(true)
       } else {
-        alert('Formulário não encontrado')
+        alert('Formul\u00e1rio n\u00e3o encontrado')
       }
     } else {
       // Regular link
@@ -318,8 +392,21 @@ export default function LinksPage() {
         onDragEnd={handleDragEnd}
       >
         <div className="grid gap-4">
-          <SortableContext items={filteredLinks.map(l => l.id)} strategy={verticalListSortingStrategy}>
-            {filteredLinks.map(link => (
+          {/* All items combined for sorting */}
+          <SortableContext items={[...filteredCollections, ...filteredStandaloneLinks].map(l => l.id)} strategy={verticalListSortingStrategy}>
+            {/* Render Collections First */}
+            {filteredCollections.map(collection => (
+              <CollectionItem
+                key={collection.id}
+                collection={collection}
+                childLinks={getCollectionLinks(collection)}
+                toggleActive={toggleActive}
+                onEdit={openEditModal}
+              />
+            ))}
+
+            {/* Then Render Standalone Links */}
+            {filteredStandaloneLinks.map(link => (
               <SortableLinkItem
                 key={link.id}
                 link={link}
@@ -368,6 +455,14 @@ export default function LinksPage() {
         isOpen={isFormEditModalOpen}
         onClose={() => setIsFormEditModalOpen(false)}
         formId={editingFormId}
+        onSuccess={fetchLinks}
+      />
+
+      {/* Collection Edit Modal */}
+      <CollectionEditModal
+        isOpen={isCollectionEditModalOpen}
+        onClose={() => setIsCollectionEditModalOpen(false)}
+        collectionLink={editingCollection}
         onSuccess={fetchLinks}
       />
     </div>

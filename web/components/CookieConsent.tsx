@@ -67,10 +67,19 @@ const DEFAULT_PREFERENCES: CookiePreferences = {
     functional: false
 }
 
-export function CookieConsent() {
+interface CookieConsentProps {
+    accentColor?: string
+    isDark?: boolean
+}
+
+export function CookieConsent({ accentColor = '#3b82f6', isDark = false }: CookieConsentProps) {
     const [showBanner, setShowBanner] = useState(false)
     const [showPreferences, setShowPreferences] = useState(false)
     const [preferences, setPreferences] = useState<CookiePreferences>(DEFAULT_PREFERENCES)
+
+    // Dynamic color based on accent with fallback
+    const primaryColor = accentColor || '#3b82f6'
+    const primaryHover = accentColor ? `${accentColor}dd` : '#2563eb'
 
     useEffect(() => {
         const consent = localStorage.getItem('vasta-consent')
@@ -187,7 +196,8 @@ export function CookieConsent() {
                                     <div className="flex flex-col sm:flex-row gap-3">
                                         <button
                                             onClick={acceptAll}
-                                            className="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-bold text-sm transition-colors shadow-lg shadow-blue-600/20"
+                                            style={{ backgroundColor: primaryColor }}
+                                            className="px-6 py-3 hover:opacity-90 text-white rounded-xl font-bold text-sm transition-colors shadow-lg"
                                         >
                                             Aceitar Todos
                                         </button>
@@ -282,8 +292,8 @@ export function CookieConsent() {
                                                     onClick={() => togglePreference(key as keyof CookiePreferences)}
                                                     disabled={info.required}
                                                     className={`relative w-14 h-8 rounded-full transition-colors ${isEnabled
-                                                            ? 'bg-blue-600'
-                                                            : 'bg-gray-300 dark:bg-gray-600'
+                                                        ? 'bg-blue-600'
+                                                        : 'bg-gray-300 dark:bg-gray-600'
                                                         } ${info.required ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
                                                 >
                                                     <div className={`absolute top-1 left-1 w-6 h-6 bg-white rounded-full transition-transform ${isEnabled ? 'translate-x-6' : 'translate-x-0'

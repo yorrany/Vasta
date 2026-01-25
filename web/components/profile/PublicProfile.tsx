@@ -8,6 +8,7 @@ import { VastaLogo } from '../VastaLogo'
 import { InstagramFeedSection } from './InstagramFeedSection'
 import { PublicProductModal } from "../products/PublicProductModal"
 import { PublicFormModal } from "../forms/PublicFormModal"
+import { ThemedCookieConsent } from "../ThemedCookieConsent"
 import "../../app/globals.css" // Import global styles for Tailwind components
 
 type LinkStyle = 'glass' | 'solid' | 'outline'
@@ -95,6 +96,17 @@ export function PublicProfile({ username }: PublicProfileProps) {
             }
 
             setProfile(profileData as ProfileData)
+
+            // Emit theme update for CookieConsent
+            const isDarkTheme = ['dark', 'noir'].includes(profileData.theme)
+            const themeData = {
+                accentColor: profileData.accent_color,
+                isDark: isDarkTheme
+            }
+
+            window.dispatchEvent(new CustomEvent('vasta:theme-update', { detail: themeData }))
+                // Store for components mounting later
+                ; (window as any).__vastaTheme = themeData
 
             // 2. Get Links
             const { data: linksData } = await supabase
@@ -586,6 +598,7 @@ export function PublicProfile({ username }: PublicProfileProps) {
                         <VastaLogo className="h-5 w-auto fill-current opacity-50 group-hover:opacity-100 transition-opacity" />
                     </a>
                 </footer>
+                <ThemedCookieConsent />
             </main >
         </div >
 
