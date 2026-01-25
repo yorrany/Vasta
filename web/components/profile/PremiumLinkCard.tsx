@@ -99,16 +99,40 @@ export function PremiumLinkCard({ link, theme, themeConfig, onClick, isPreview =
     }
 
     // *** STANDARD LINK RENDER ***
+    const isNeo = theme === 'neo';
+    const isBento = theme === 'bento';
+    const isNoir = theme === 'noir';
+
+    // Base height and spacing adjustments for Preview
+    const containerClasses = isPreview
+        ? `min-h-[4rem] rounded-xl`
+        : `min-h-[5.5rem] lg:min-h-[6rem]`;
+
+    // Bento Box Size
+    const bentoBoxClass = isPreview
+        ? `w-10 h-10 ml-3 rounded-lg`
+        : `w-14 h-14 ml-5 rounded-2xl`;
+
+    // Neo Sidebar Size
+    const neoSidebarClass = isPreview
+        ? `w-12`
+        : `w-20`;
+
+    // Content Padding
+    const contentPadding = isPreview
+        ? `px-3 py-2 ${isNeo ? 'pl-3' : ''}`
+        : `px-6 py-4 ${isNeo ? 'pl-6' : ''}`;
+
     return (
         <a
             href={link.url}
             target="_blank"
             rel="noopener noreferrer"
             onClick={onClick}
-            className={`group relative flex items-center w-full min-h-[5.5rem] lg:min-h-[6rem] overflow-hidden ${themeConfig.link}`}
+            className={`group relative flex items-center w-full overflow-hidden ${themeConfig.link} ${containerClasses}`}
         >
             {/* NOIR: Background Image Layer (Full Cover) */}
-            {theme === 'noir' && ogImage && (
+            {isNoir && ogImage && (
                 <>
                     <div
                         className="absolute inset-0 bg-cover bg-center opacity-40 group-hover:opacity-60 group-hover:scale-105 transition-all duration-700 ease-out z-0"
@@ -119,27 +143,27 @@ export function PremiumLinkCard({ link, theme, themeConfig, onClick, isPreview =
             )}
 
             {/* NOIR: Fallback Gradient */}
-            {theme === 'noir' && !ogImage && (
+            {isNoir && !ogImage && (
                 <div className="absolute left-0 top-0 bottom-0 w-24 bg-gradient-to-r from-white/10 to-transparent opacity-50 group-hover:w-full transition-all duration-700 ease-out z-0" />
             )}
 
 
             {/* BENTO: Thumbnail Image or Icon (Left Box) */}
-            {theme === 'bento' && (
-                <div className={`shrink-0 w-14 h-14 ml-5 rounded-2xl flex items-center justify-center overflow-hidden transition-all duration-300 z-10 relative ${ogImage ? 'bg-gray-100 shadow-sm' : 'bg-gray-50 group-hover:bg-vasta-primary/10'}`}>
+            {isBento && (
+                <div className={`shrink-0 flex items-center justify-center overflow-hidden transition-all duration-300 z-10 relative ${ogImage ? 'bg-gray-100 shadow-sm' : 'bg-gray-50 group-hover:bg-vasta-primary/10'} ${bentoBoxClass}`}>
                     {ogImage ? (
                         <img src={ogImage} alt="" className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
                     ) : (
                         <div className="text-gray-400 group-hover:text-vasta-primary transition-colors">
-                            {link.icon ? <span className="text-xl">{link.icon}</span> : <ExternalLink size={20} />}
+                            {link.icon ? <span className={isPreview ? "text-lg" : "text-xl"}>{link.icon}</span> : <ExternalLink size={isPreview ? 16 : 20} />}
                         </div>
                     )}
                 </div>
             )}
 
             {/* NEO: Image Box or Icon Box (Left Sidebar) */}
-            {theme === 'neo' && (
-                <div className="shrink-0 w-20 h-full border-r-2 border-black bg-vasta-primary flex items-center justify-center overflow-hidden z-10 relative group-hover:bg-black transition-colors">
+            {isNeo && (
+                <div className={`shrink-0 h-full border-r-2 border-black bg-vasta-primary flex items-center justify-center overflow-hidden z-10 relative group-hover:bg-black transition-colors ${neoSidebarClass}`}>
                     {ogImage ? (
                         <div className="w-full h-full relative">
                             <img src={ogImage} alt="" className="w-full h-full object-cover grayscale mix-blend-multiply group-hover:grayscale-0 group-hover:mix-blend-normal transition-all duration-300" />
@@ -148,35 +172,35 @@ export function PremiumLinkCard({ link, theme, themeConfig, onClick, isPreview =
                         </div>
                     ) : (
                         <div className="text-black group-hover:text-white transition-colors">
-                            <ExternalLink size={24} strokeWidth={3} />
+                            <ExternalLink size={isPreview ? 18 : 24} strokeWidth={3} />
                         </div>
                     )}
                 </div>
             )}
 
             {/* Content Area */}
-            <div className={`flex-1 flex flex-col justify-center z-10 px-6 py-4 ${theme === 'neo' ? 'pl-6' : ''}`}>
+            <div className={`flex-1 flex flex-col justify-center z-10 ${contentPadding}`}>
                 <span className={`leading-tight line-clamp-2 
-                    ${theme === 'neo' ? (isPreview ? 'text-sm font-black uppercase text-left tracking-tight decoration-2 underline-offset-2' : 'text-xl font-black uppercase text-left tracking-tight decoration-2 underline-offset-2') : ''} 
-                    ${theme === 'noir' ? (isPreview ? 'text-sm font-serif tracking-wide text-white text-left drop-shadow-md group-hover:text-white' : 'text-lg font-serif tracking-wide text-white text-left drop-shadow-md group-hover:text-white') : ''} 
-                    ${theme === 'bento' ? (isPreview ? 'text-sm font-bold text-gray-800 text-left' : 'text-lg font-bold text-gray-800 text-left') : ''}
+                    ${isNeo ? (isPreview ? 'text-xs font-black uppercase text-left tracking-tight decoration-2 underline-offset-2' : 'text-xl font-black uppercase text-left tracking-tight decoration-2 underline-offset-2') : ''} 
+                    ${isNoir ? (isPreview ? 'text-xs font-serif tracking-wide text-white text-left drop-shadow-md group-hover:text-white' : 'text-lg font-serif tracking-wide text-white text-left drop-shadow-md group-hover:text-white') : ''} 
+                    ${isBento ? (isPreview ? 'text-xs font-bold text-gray-800 text-left' : 'text-lg font-bold text-gray-800 text-left') : ''}
                 `}>
                     {link.title}
                 </span>
 
                 {/* Subtitles & Decorators */}
-                {theme === 'noir' && (
-                    <span className="text-[10px] uppercase tracking-[0.2em] text-white/60 mt-1 group-hover:text-white transition-colors text-left font-medium flex items-center gap-2">
+                {isNoir && (
+                    <span className={`text-white/60 mt-1 group-hover:text-white transition-colors text-left font-medium flex items-center gap-2 ${isPreview ? 'text-[8px] tracking-[0.1em]' : 'text-[10px] uppercase tracking-[0.2em]'}`}>
                         {loading ? 'Carregando preview...' : (ogImage ? 'Visualizar' : 'Explorar')}
                     </span>
                 )}
 
-                {theme === 'bento' && (
+                {isBento && (
                     <div className="mt-1 flex items-center gap-2">
                         {ogImage ? (
-                            <span className="text-xs text-gray-400 font-medium truncate max-w-[150px]">{hostname}</span>
+                            <span className={`text-gray-400 font-medium truncate max-w-[150px] ${isPreview ? 'text-[10px]' : 'text-xs'}`}>{hostname}</span>
                         ) : (
-                            <div className="h-1 w-8 bg-gray-200 rounded-full group-hover:w-12 group-hover:bg-vasta-primary transition-all duration-500" />
+                            <div className={`bg-gray-200 rounded-full group-hover:w-12 group-hover:bg-vasta-primary transition-all duration-500 ${isPreview ? 'h-0.5 w-6' : 'h-1 w-8'}`} />
                         )}
                     </div>
                 )}

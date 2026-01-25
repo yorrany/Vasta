@@ -64,15 +64,23 @@ export function InstagramFeedSection({ userId, theme, isPreview = false }: { use
         }
     }
 
+    const marginClass = isPreview ? 'mt-6 lg:mt-0' : 'mt-12 lg:mt-0';
+    const headerClass = isPreview ? 'text-[10px] mb-3' : 'text-sm mb-6';
+    const iconSize = isPreview ? 12 : 16;
+    const buttonClass = isPreview ? 'px-3 py-1.5 text-xs' : 'px-5 py-2 text-sm';
+    const buttonIconSize = isPreview ? 12 : 14;
+
+    const gapClass = isNeo ? 'gap-0' : (isPreview ? 'gap-1' : 'gap-1 md:gap-2');
+
     return (
-        <div className={`mt-12 lg:mt-0 ${loading ? 'opacity-50' : 'opacity-100'} transition-opacity`}>
-            <h3 className={`text-center lg:text-left text-sm font-bold uppercase tracking-widest opacity-50 mb-6 font-sans flex items-center gap-4 ${isNeo ? 'text-black' : ''}`}>
+        <div className={`${marginClass} ${loading ? 'opacity-50' : 'opacity-100'} transition-opacity`}>
+            <h3 className={`text-center lg:text-left font-bold uppercase tracking-widest opacity-50 font-sans flex items-center gap-4 ${isNeo ? 'text-black' : ''} ${headerClass}`}>
                 <span className="h-px flex-1 bg-current opacity-20 lg:hidden"></span>
-                <span className="flex items-center gap-2"><Instagram size={16} /> Instagram</span>
+                <span className="flex items-center gap-2"><Instagram size={iconSize} /> Instagram</span>
                 <span className="h-px flex-1 bg-current opacity-20"></span>
             </h3>
 
-            <div className={`grid grid-cols-3 gap-1 md:gap-2 ${isNeo ? 'gap-0 border-4 border-black bg-black' : ''} rounded-xl overflow-hidden`}>
+            <div className={`grid grid-cols-3 ${gapClass} ${isNeo ? 'border-4 border-black bg-black' : ''} rounded-xl overflow-hidden`}>
                 {feed.slice(0, 9).map((post) => (
                     <a
                         key={post.id}
@@ -108,14 +116,14 @@ export function InstagramFeedSection({ userId, theme, isPreview = false }: { use
 
             {/* Follow Button */}
             {feed[0]?.username && (
-                <div className="flex justify-center mt-6">
+                <div className={`flex justify-center ${isPreview ? 'mt-4' : 'mt-6'}`}>
                     <a
                         href={`https://instagram.com/${feed[0].username}`}
                         target="_blank"
                         rel="noopener noreferrer"
                         onClick={handleLinkClick}
                         className={`
-                            flex items-center gap-2 px-5 py-2 rounded-full text-sm font-medium transition-all
+                            flex items-center gap-2 rounded-full font-medium transition-all ${buttonClass}
                             ${isNeo
                                 ? 'bg-white border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none text-black'
                                 : isNoir
@@ -124,7 +132,7 @@ export function InstagramFeedSection({ userId, theme, isPreview = false }: { use
                             }
                         `}
                     >
-                        <Instagram size={14} />
+                        <Instagram size={buttonIconSize} />
                         Seguir @{feed[0].username}
                     </a>
                 </div>
