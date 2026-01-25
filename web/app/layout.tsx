@@ -51,6 +51,7 @@ type Props = {
 import { TurnstileProtection } from "../components/TurnstileProtection"
 import { AuthProvider } from "../lib/AuthContext"
 import { AuthModal } from "../components/AuthModal"
+import { CookieConsent } from "../components/CookieConsent"
 
 export default function RootLayout({ children }: Props) {
   return (
@@ -66,6 +67,7 @@ export default function RootLayout({ children }: Props) {
             <TurnstileProtection />
             {children}
             <AuthModal />
+            <CookieConsent />
             <SpeedInsights />
             <Analytics />
           </AuthProvider>

@@ -1,7 +1,8 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect, useMemo } from "react"
 import { X, Loader2, Send, CheckCircle2 } from "lucide-react"
+import { Turnstile } from "@marsidev/react-turnstile"
 
 interface FormField {
     id: string
@@ -33,11 +34,31 @@ export function PublicFormModal({ isOpen, onClose, form, accentColor = "#000", i
     const [loading, setLoading] = useState(false)
     const [success, setSuccess] = useState(false)
     const [formData, setFormData] = useState<Record<string, string>>({})
+    const [captchaToken, setCaptchaToken] = useState<string | null>(null)
 
-    if (!isOpen || !form) return null
+    // Normalize fields to ensure unique IDs
+    const normalizedForm = useMemo(() => {
+        if (!form) return null
+
+        return {
+            ...form,
+            fields: form.fields.map((field, index) => ({
+                ...field,
+                id: field.id || `field-${form.id}-${index}`
+            }))
+        }
+    }, [form])
+
+    if (!isOpen || !normalizedForm) return null
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
+
+        if (!captchaToken) {
+            alert('Por favor, complete a verificação de segurança.')
+            return
+        }
+
         setLoading(true)
 
         try {
@@ -47,8 +68,9 @@ export function PublicFormModal({ isOpen, onClose, form, accentColor = "#000", i
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({
-                    formId: form.id,
-                    data: formData
+                    formId: normalizedForm.id,
+                    data: formData,
+                    captchaToken
                 })
             })
 
@@ -92,17 +114,17 @@ export function PublicFormModal({ isOpen, onClose, form, accentColor = "#000", i
             <div className={`
                 relative w-full max-w-lg rounded-3xl shadow-2xl overflow-hidden 
                 animate-in zoom-in-95 slide-in-from-bottom-5 duration-300
-                flex flex-col max-h-[90vh]
+                flex flex-col max-h-[85vh]
                 ${isDark ? 'bg-[#0B0E14] text-gray-100' : 'bg-white text-gray-900'}
             `}>
 
                 {/* Header */}
                 <div className={`flex items-center justify-between p-6 border-b ${isDark ? 'border-white/10' : 'border-gray-100'}`}>
                     <div>
-                        <h2 className="text-xl font-bold leading-tight">{form.title}</h2>
-                        {form.description && (
+                        <h2 className="text-xl font-bold leading-tight">{normalizedForm.title}</h2>
+                        {normalizedForm.description && (
                             <p className={`text-sm mt-1 ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>
-                                {form.description}
+                                {normalizedForm.description}
                             </p>
                         )}
                     </div>
@@ -117,7 +139,7 @@ export function PublicFormModal({ isOpen, onClose, form, accentColor = "#000", i
 
                 {/* Success State */}
                 {success ? (
-                    <div className="flex-1 flex flex-col items-center justify-center p-12 text-center space-y-4">
+                    <div className="flex flex-col items-center justify-center p-12 text-center space-y-4">
                         <div className="w-16 h-16 rounded-full bg-green-500/10 flex items-center justify-center text-green-500 mb-2">
                             <CheckCircle2 size={32} />
                         </div>
@@ -128,8 +150,8 @@ export function PublicFormModal({ isOpen, onClose, form, accentColor = "#000", i
                     </div>
                 ) : (
                     /* Form */
-                    <form onSubmit={handleSubmit} className="flex-1 overflow-y-auto p-6 space-y-5 custom-scrollbar">
-                        {form.fields
+                    <form onSubmit={handleSubmit} className="overflow-y-auto p-6 space-y-5 custom-scrollbar">
+                        {normalizedForm.fields
                             .sort((a, b) => a.order - b.order)
                             .map((field) => (
                                 <div key={field.id} className="space-y-2">
@@ -195,7 +217,22 @@ export function PublicFormModal({ isOpen, onClose, form, accentColor = "#000", i
 
                 {/* Footer Actions */}
                 {!success && (
-                    <div className={`p-6 border-t ${isDark ? 'border-white/10' : 'border-gray-100'} bg-opacity-50`}>
+                    <div className={`p-6 border-t ${isDark ? 'border-white/10' : 'border-gray-100'} bg-opacity-50 space-y-4`}>
+                        {/* Turnstile Captcha */}
+                        <div className="w-full">
+                            {/* @ts-ignore - Turnstile library has incomplete type definitions */}
+                            <Turnstile
+                                siteKey={process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY || '1x00000000000000000000AA'}
+                                onSuccess={(token) => setCaptchaToken(token)}
+                                onError={() => setCaptchaToken(null)}
+                                onExpire={() => setCaptchaToken(null)}
+                                options={{
+                                    theme: isDark ? 'dark' : 'light',
+                                    size: 'flexible'
+                                }}
+                            />
+                        </div>
+
                         <button
                             onClick={handleSubmit}
                             disabled={loading}

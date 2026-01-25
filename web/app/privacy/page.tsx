@@ -1,210 +1,155 @@
-import type { Metadata } from 'next'
-import { LegalLayout, LegalSection, LegalSubsection, LegalFeatureBox } from '@/components/LegalLayout'
-
-export const metadata: Metadata = {
-    title: 'Política de Privacidade | Vasta Pro',
-    description: 'Como o Vasta Pro protege e utiliza seus dados pessoais',
-}
-
 export default function PrivacyPage() {
     return (
-        <LegalLayout
-            title="Política de Privacidade"
-            description="Como coletamos, usamos e protegemos seus dados pessoais"
-            lastUpdated="23 de janeiro de 2026"
-        >
-            <LegalSection title="1. Introdução">
-                <p>
-                    A <strong>YORRANY MARTINS BRAGA LTDA</strong>, CNPJ nº 63.839.428/0001-04, proprietária do <strong>Vasta Pro</strong>, está comprometida em proteger sua privacidade. Esta política descreve como tratamos seus dados de acordo com a LGPD (Lei 13.709/2018) e GDPR.
-                </p>
-            </LegalSection>
+        <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-12 px-4">
+            <div className="max-w-4xl mx-auto bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-8 md:p-12">
+                <h1 className="text-4xl font-bold text-gray-900 dark:text-white mb-8">
+                    Política de Privacidade
+                </h1>
 
-            <LegalSection title="2. Dados Coletados">
-                <LegalSubsection title="2.1 Informações Fornecidas por Você">
-                    <ul className="list-disc list-inside space-y-2 ml-4">
-                        <li><strong>Cadastro:</strong> Nome, email, senha, username</li>
-                        <li><strong>Perfil:</strong> Foto, biografia, links, informações profissionais</li>
-                        <li><strong>Pagamento:</strong> Processados por terceiros (não armazenamos cartões)</li>
-                    </ul>
-                </LegalSubsection>
+                <div className="prose dark:prose-invert max-w-none space-y-6 text-gray-700 dark:text-gray-300">
+                    <p className="text-sm text-gray-500 dark:text-gray-400">
+                        Última atualização: {new Date().toLocaleDateString('pt-BR')}
+                    </p>
 
-                <LegalSubsection title="2.2 Dados de Integrações">
-                    <LegalFeatureBox variant="primary" title="Instagram Business">
-                        <p>Com sua autorização, coletamos:</p>
-                        <ul className="list-disc list-inside space-y-1 ml-4 text-sm">
-                            <li>Nome de usuário (@username)</li>
-                            <li>Foto de perfil (URL pública)</li>
-                            <li>Nome da conta</li>
-                            <li>ID da conta (identificação técnica)</li>
-                        </ul>
-                        <p className="text-sm mt-2">
-                            Permissão utilizada: <code className="text-xs bg-indigo-100 dark:bg-indigo-900/50 px-2 py-0.5 rounded">instagram_business_basic</code>
+                    <section>
+                        <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">1. Introdução</h2>
+                        <p>
+                            A Vasta ("nós", "nosso" ou "nossa") está comprometida em proteger sua privacidade.
+                            Esta Política de Privacidade explica como coletamos, usamos, divulgamos e protegemos
+                            suas informações quando você utiliza nosso serviço, em conformidade com a Lei Geral
+                            de Proteção de Dados (LGPD - Lei nº 13.709/2018).
                         </p>
-                    </LegalFeatureBox>
-                </LegalSubsection>
+                    </section>
 
-                <LegalSubsection title="2.3 Dados Coletados Automaticamente">
-                    <ul className="list-disc list-inside space-y-2 ml-4">
-                        <li>Endereço IP, navegador, sistema operacional</li>
-                        <li>Páginas visitadas e tempo de sessão</li>
-                        <li>Cookies para autenticação e preferências</li>
-                    </ul>
-                </LegalSubsection>
-            </LegalSection>
+                    <section>
+                        <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">2. Dados que Coletamos</h2>
 
-            <LegalSection title="3. Finalidade do Tratamento">
-                <p>Usamos seus dados para:</p>
-                <div className="grid md:grid-cols-2 gap-4 mt-4">
-                    <LegalFeatureBox variant="success">
-                        <strong className="text-emerald-700 dark:text-emerald-400">✓ Fornecer o Serviço</strong>
-                        <p className="text-sm">Criar e gerenciar sua landing page profissional</p>
-                    </LegalFeatureBox>
-                    <LegalFeatureBox variant="success">
-                        <strong className="text-emerald-700 dark:text-emerald-400">✓ Processar Pagamentos</strong>
-                        <p className="text-sm">Gerenciar assinaturas e cobranças</p>
-                    </LegalFeatureBox>
-                    <LegalFeatureBox variant="success">
-                        <strong className="text-emerald-700 dark:text-emerald-400">✓ Exibir Conteúdo</strong>
-                        <p className="text-sm">Integrar dados do Instagram em sua página</p>
-                    </LegalFeatureBox>
-                    <LegalFeatureBox variant="success">
-                        <strong className="text-emerald-700 dark:text-emerald-400">✓ Melhorias</strong>
-                        <p className="text-sm">Análises agregadas para aprimorar o produto</p>
-                    </LegalFeatureBox>
+                        <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">2.1 Dados Fornecidos por Você</h3>
+                        <ul className="list-disc pl-6 space-y-2">
+                            <li>Nome completo</li>
+                            <li>Endereço de e-mail</li>
+                            <li>Nome de usuário</li>
+                            <li>Informações de perfil (bio, links, imagens)</li>
+                            <li>Respostas a formulários</li>
+                        </ul>
+
+                        <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2 mt-4">2.2 Dados Coletados Automaticamente</h3>
+                        <ul className="list-disc pl-6 space-y-2">
+                            <li>Endereço IP</li>
+                            <li>Tipo de navegador</li>
+                            <li>Dispositivo utilizado</li>
+                            <li>Sistema operacional</li>
+                            <li>Páginas visitadas e tempo de navegação</li>
+                        </ul>
+                    </section>
+
+                    <section>
+                        <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">3. Como Usamos Seus Dados</h2>
+                        <ul className="list-disc pl-6 space-y-2">
+                            <li>Fornecer, operar e manter nossa plataforma</li>
+                            <li>Autenticar e gerenciar sua conta</li>
+                            <li>Personalizar sua experiência</li>
+                            <li>Enviar notificações importantes</li>
+                            <li>Melhorar nossos serviços através de análises</li>
+                            <li>Detectar e prevenir fraudes</li>
+                            <li>Cumprir obrigações legais</li>
+                        </ul>
+                    </section>
+
+                    <section>
+                        <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">4. Base Legal (LGPD)</h2>
+                        <p>Processamos seus dados pessoais com base em:</p>
+                        <ul className="list-disc pl-6 space-y-2">
+                            <li><strong>Consentimento:</strong> Para cookies não essenciais e marketing</li>
+                            <li><strong>Execução de contrato:</strong> Para fornecer os serviços contratados</li>
+                            <li><strong>Legítimo interesse:</strong> Para melhorias e segurança</li>
+                            <li><strong>Cumprimento de obrigação legal:</strong> Quando exigido por lei</li>
+                        </ul>
+                    </section>
+
+                    <section>
+                        <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">5. Compartilhamento de Dados</h2>
+                        <p>Compartilhamos seus dados apenas com:</p>
+                        <ul className="list-disc pl-6 space-y-2">
+                            <li><strong>Supabase:</strong> Infraestrutura de banco de dados e autenticação</li>
+                            <li><strong>Cloudflare:</strong> Segurança e proteção contra bots</li>
+                            <li><strong>Vercel:</strong> Hospedagem da plataforma</li>
+                        </ul>
+                        <p className="mt-4">
+                            Nunca vendemos seus dados pessoais a terceiros.
+                        </p>
+                    </section>
+
+                    <section>
+                        <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">6. Seus Direitos (LGPD)</h2>
+                        <p>Você tem o direito de:</p>
+                        <ul className="list-disc pl-6 space-y-2">
+                            <li>Confirmar a existência de tratamento de dados</li>
+                            <li>Acessar seus dados</li>
+                            <li>Corrigir dados incompletos, inexatos ou desatualizados</li>
+                            <li>Solicitar anonimização, bloqueio ou eliminação</li>
+                            <li>Revogar o consentimento</li>
+                            <li>Obter portabilidade dos dados</li>
+                            <li>Solicitar informação sobre compartilhamento</li>
+                            <li>Obter informações sobre a possibilidade de não fornecer consentimento</li>
+                        </ul>
+                        <p className="mt-4">
+                            Para exercer seus direitos, entre em contato através de:{' '}
+                            <a href="mailto:privacidade@vasta.app" className="text-blue-600 dark:text-blue-400 underline">
+                                privacidade@vasta.app
+                            </a>
+                        </p>
+                    </section>
+
+                    <section>
+                        <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">7. Cookies e Tecnologias</h2>
+                        <p>
+                            Utilizamos cookies e tecnologias semelhantes. Consulte nosso banner de cookies
+                            para gerenciar suas preferências. Para mais detalhes, veja nossa lista completa
+                            de cookies na seção "Gerenciar Preferências" do banner.
+                        </p>
+                    </section>
+
+                    <section>
+                        <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">8. Segurança</h2>
+                        <p>
+                            Implementamos medidas técnicas e organizacionais apropriadas para proteger seus dados,
+                            incluindo criptografia, controle de acesso e monitoramento contínuo.
+                        </p>
+                    </section>
+
+                    <section>
+                        <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">9. Retenção de Dados</h2>
+                        <p>
+                            Mantemos seus dados pelo tempo necessário para cumprir as finalidades descritas
+                            nesta política ou conforme exigido por lei. Após esse período, os dados são
+                            anonimizados ou excluídos de forma segura.
+                        </p>
+                    </section>
+
+                    <section>
+                        <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">10. Contato do DPO</h2>
+                        <p>
+                            Para questões relacionadas à privacidade de dados, entre em contato com nosso
+                            Encarregado de Proteção de Dados:
+                        </p>
+                        <p className="mt-2">
+                            E-mail:{' '}
+                            <a href="mailto:dpo@vasta.app" className="text-blue-600 dark:text-blue-400 underline">
+                                dpo@vasta.app
+                            </a>
+                        </p>
+                    </section>
+
+                    <section>
+                        <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">11. Alterações</h2>
+                        <p>
+                            Podemos atualizar esta política periodicamente. Notificaremos sobre mudanças
+                            significativas através de e-mail ou aviso em nossa plataforma.
+                        </p>
+                    </section>
                 </div>
-            </LegalSection>
-
-            <LegalSection title="4. Base Legal (LGPD)">
-                <ul className="space-y-2">
-                    <li>• <strong>Consentimento:</strong> Integrações com redes sociais</li>
-                    <li>• <strong>Execução de Contrato:</strong> Fornecimento do serviço</li>
-                    <li>• <strong>Legítimo Interesse:</strong> Segurança e melhorias</li>
-                    <li>• <strong>Obrigação Legal:</strong> Cumprimento fiscal e regulatório</li>
-                </ul>
-            </LegalSection>
-
-            <LegalSection title="5. Compartilhamento de Dados">
-                <LegalFeatureBox variant="primary" title="Processadores de Dados (Sub-contratados)">
-                    <ul className="list-disc list-inside space-y-1 text-sm">
-                        <li><strong>Supabase:</strong> Banco de dados e autenticação</li>
-                        <li><strong>Vercel:</strong> Hospedagem da aplicação</li>
-                        <li><strong>Stripe/AbacatePay:</strong> Processamento de pagamentos</li>
-                        <li><strong>Cloudflare:</strong> Segurança e CDN</li>
-                    </ul>
-                </LegalFeatureBox>
-
-                <LegalFeatureBox variant="warning" title="⚠️ Importante">
-                    <p className="text-sm">
-                        <strong>Não vendemos, alugamos ou compartilhamos seus dados</strong> com terceiros para marketing sem seu consentimento explícito.
-                    </p>
-                </LegalFeatureBox>
-            </LegalSection>
-
-            <LegalSection title="6. Segurança">
-                <p>Implementamos medidas técnicas e organizacionais:</p>
-                <div className="mt-4 space-y-3">
-                    <div className="flex items-start gap-3">
-                        <div className="flex-shrink-0 w-8 h-8 rounded-lg bg-indigo-100 dark:bg-indigo-900/30 flex items-center justify-center text-indigo-600 dark:text-indigo-400">
-                            🔒
-                        </div>
-                        <div>
-                            <strong className="text-vasta-text">Criptografia SSL/TLS</strong>
-                            <p className="text-sm text-vasta-muted">Dados em trânsito protegidos</p>
-                        </div>
-                    </div>
-                    <div className="flex items-start gap-3">
-                        <div className="flex-shrink-0 w-8 h-8 rounded-lg bg-indigo-100 dark:bg-indigo-900/30 flex items-center justify-center text-indigo-600 dark:text-indigo-400">
-                            🛡️
-                        </div>
-                        <div>
-                            <strong className="text-vasta-text">Criptografia em Repouso</strong>
-                            <p className="text-sm text-vasta-muted">Banco de dados protegido</p>
-                        </div>
-                    </div>
-                    <div className="flex items-start gap-3">
-                        <div className="flex-shrink-0 w-8 h-8 rounded-lg bg-indigo-100 dark:bg-indigo-900/30 flex items-center justify-center text-indigo-600 dark:text-indigo-400">
-                            👥
-                        </div>
-                        <div>
-                            <strong className="text-vasta-text">Controle de Acesso</strong>
-                            <p className="text-sm text-vasta-muted">Apenas pessoal autorizado</p>
-                        </div>
-                    </div>
-                </div>
-            </LegalSection>
-
-            <LegalSection title="7. Seus Direitos (LGPD)">
-                <p className="mb-4">Você tem direito a:</p>
-                <div className="grid md:grid-cols-2 gap-3">
-                    <div className="flex items-start gap-2">
-                        <span className="text-vasta-primary">✓</span>
-                        <span><strong>Confirmação e acesso</strong> aos seus dados</span>
-                    </div>
-                    <div className="flex items-start gap-2">
-                        <span className="text-vasta-primary">✓</span>
-                        <span><strong>Correção</strong> de dados incompletos</span>
-                    </div>
-                    <div className="flex items-start gap-2">
-                        <span className="text-vasta-primary">✓</span>
-                        <span><strong>Anonimização ou exclusão</strong> de dados</span>
-                    </div>
-                    <div className="flex items-start gap-2">
-                        <span className="text-vasta-primary">✓</span>
-                        <span><strong>Portabilidade</strong> para outro fornecedor</span>
-                    </div>
-                    <div className="flex items-start gap-2">
-                        <span className="text-vasta-primary">✓</span>
-                        <span><strong>Revogação do consentimento</strong> a qualquer momento</span>
-                    </div>
-                    <div className="flex items-start gap-2">
-                        <span className="text-vasta-primary">✓</span>
-                        <span><strong>Informações sobre compartilhamento</strong></span>
-                    </div>
-                </div>
-
-                <LegalFeatureBox variant="accent" title="Como Exercer Seus Direitos">
-                    <p className="text-sm">
-                        Entre em contato através de: <strong>privacy@vasta.pro</strong>
-                    </p>
-                </LegalFeatureBox>
-            </LegalSection>
-
-            <LegalSection title="8. Retenção de Dados">
-                <p>
-                    Mantemos seus dados enquanto sua conta estiver ativa ou conforme necessário para cumprir obrigações legais (ex: dados fiscais por 5 anos).
-                </p>
-                <p>
-                    Ao solicitar exclusão da conta, removemos seus dados em até <strong>30 dias</strong>, exceto os que devemos manter por lei.
-                </p>
-            </LegalSection>
-
-            <LegalSection title="9. Cookies">
-                <p>
-                    Utilizamos cookies essenciais para autenticação e preferências. Você pode gerenciar cookies nas configurações do navegador.
-                </p>
-            </LegalSection>
-
-            <LegalSection title="10. Alterações">
-                <p>
-                    Podemos atualizar esta política periodicamente. Notificaremos sobre mudanças significativas por email ou aviso na plataforma.
-                </p>
-            </LegalSection>
-
-            <LegalSection title="11. Contato">
-                <LegalFeatureBox variant="primary">
-                    <div className="space-y-2 text-sm">
-                        <p><strong>Empresa:</strong> YORRANY MARTINS BRAGA LTDA</p>
-                        <p><strong>CNPJ:</strong> 63.839.428/0001-04</p>
-                        <p><strong>Email de Privacidade:</strong> <a href="mailto:privacy@vasta.pro" className="text-indigo-600 dark:text-indigo-400 hover:underline">privacy@vasta.pro</a></p>
-                        <p><strong>Encarregado de Dados (DPO):</strong> privacy@vasta.pro</p>
-                        <p><strong>Website:</strong> https://vasta.pro</p>
-                    </div>
-                </LegalFeatureBox>
-
-                <p className="mt-4">
-                    Você também pode registrar reclamações junto à <strong>Autoridade Nacional de Proteção de Dados (ANPD)</strong>: <a href="https://www.gov.br/anpd" target="_blank" rel="noopener noreferrer" className="text-vasta-primary hover:underline">www.gov.br/anpd</a>
-                </p>
-            </LegalSection>
-        </LegalLayout>
+            </div>
+        </div>
     )
 }

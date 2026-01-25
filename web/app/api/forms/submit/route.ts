@@ -4,13 +4,46 @@ import { createClient } from '@/lib/supabase/server'
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
-    const { formId, data } = body
+    const { formId, data, captchaToken } = body
 
     if (!formId || !data) {
       return NextResponse.json(
         { error: 'formId e data são obrigatórios' },
         { status: 400 }
       )
+    }
+
+    // Validate Turnstile captcha
+    if (!captchaToken) {
+      return NextResponse.json(
+        { error: 'Verificação de segurança obrigatória' },
+        { status: 400 }
+      )
+    }
+
+    // Verify captcha token with Cloudflare
+    const turnstileSecret = process.env.TURNSTILE_SECRET_KEY
+    if (turnstileSecret) {
+      const turnstileResponse = await fetch('https://challenges.cloudflare.com/turnstile/v0/siteverify', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          secret: turnstileSecret,
+          response: captchaToken,
+          remoteip: request.headers.get('x-forwarded-for') || request.headers.get('x-real-ip')
+        })
+      })
+
+      const turnstileResult = await turnstileResponse.json()
+      
+      if (!turnstileResult.success) {
+        return NextResponse.json(
+          { error: 'Verificação de segurança falhou. Tente novamente.' },
+          { status: 400 }
+        )
+      }
     }
 
     const supabase = await createClient()
