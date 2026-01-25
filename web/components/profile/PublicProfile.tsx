@@ -285,6 +285,22 @@ export function PublicProfile({ username }: PublicProfileProps) {
                             return <PremiumLinkCard key={link.id} link={link} theme={theme as any} themeConfig={currentThemeConfig} />
                         }
 
+                        // Semi-Premium/Classic Logic for Standard Headers/Text
+                        if (link.url.startsWith('header://')) {
+                            return (
+                                <h2 key={link.id} className="text-xl lg:text-2xl font-bold text-center w-full pt-6 pb-2" style={{ color: pageStyle.color }}>
+                                    {link.title}
+                                </h2>
+                            )
+                        }
+                        if (link.url.startsWith('text://')) {
+                            return (
+                                <p key={link.id} className="text-sm lg:text-base text-center w-full pb-4 opacity-80 whitespace-pre-wrap" style={{ color: pageStyle.color }}>
+                                    {link.title}
+                                </p>
+                            )
+                        }
+
                         // Classic Themes (Light, Dark, Adaptive)
                         // Uses the standard Button Layout
                         return (

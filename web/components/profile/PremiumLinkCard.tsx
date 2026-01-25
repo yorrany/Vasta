@@ -54,6 +54,36 @@ export function PremiumLinkCard({ link, theme, themeConfig }: PremiumLinkCardPro
     // Extrair hostname para display 'clean' no Bento
     const hostname = tryGetHostname(link.url)
 
+    // *** HEADER ITEM RENDER ***
+    if (link.url.startsWith('header://')) {
+        return (
+            <div className={`w-full py-4 px-2 ${theme === 'neo' ? 'text-black' : theme === 'noir' ? 'text-white' : 'text-gray-800'}`}>
+                <h2 className={`
+                    text-center font-bold
+                    ${theme === 'neo' ? 'text-2xl uppercase tracking-tighter border-b-4 border-black pb-2' : ''}
+                    ${theme === 'noir' ? 'text-2xl font-serif tracking-widest border-b border-white/20 pb-4' : ''}
+                    ${theme === 'bento' ? 'text-xl tracking-tight text-gray-900' : ''}
+                `}>
+                    {link.title}
+                </h2>
+            </div>
+        )
+    }
+
+    // *** TEXT ITEM RENDER ***
+    if (link.url.startsWith('text://')) {
+        return (
+            <div className={`w-full px-4 -mt-2 mb-4 text-center
+                ${theme === 'neo' ? 'font-medium' : ''}
+                ${theme === 'noir' ? 'text-white/60 font-light tracking-wide text-sm' : ''}
+                ${theme === 'bento' ? 'text-gray-500 text-sm' : ''}
+            `}>
+                <p>{link.title}</p>
+            </div>
+        )
+    }
+
+    // *** STANDARD LINK RENDER ***
     return (
         <a
             href={link.url}
