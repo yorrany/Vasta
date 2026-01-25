@@ -324,7 +324,7 @@ export function PublicProfile({ username }: PublicProfileProps) {
             </aside>
 
             {/* Content Scroll - Centered Column */}
-            <main className="flex-1 w-full max-w-3xl px-4 py-8 lg:px-8 lg:py-12 space-y-12 pb-32">
+            <main className="flex-1 w-full max-w-3xl px-4 py-8 lg:px-8 lg:py-12 space-y-12 pb-8">
 
                 {/* Links Section */}
                 <div className="w-full mx-auto">
@@ -529,12 +529,12 @@ export function PublicProfile({ username }: PublicProfileProps) {
                 </div>
 
                 {/* Footer Widget */}
-                <footer ref={footerRef} className="mt-16 w-full max-w-lg mx-auto pb-8 px-4">
+                <footer ref={footerRef} className="mt-16 w-full pb-0">
                     <a
                         href="https://vasta.pro"
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="group flex items-center justify-between w-full bg-black/5 dark:bg-white/5 hover:bg-black/10 dark:hover:bg-white/10 backdrop-blur-md border border-black/10 dark:border-white/10 p-4 rounded-2xl transition-all hover:scale-[1.02] active:scale-[0.98]"
+                        className="group flex items-center justify-between w-full bg-black/5 dark:bg-white/5 hover:bg-black/10 dark:hover:bg-white/10 backdrop-blur-md border border-black/10 dark:border-white/10 py-6 px-6 rounded-2xl transition-all hover:scale-[1.01] active:scale-[0.99]"
                         style={{ color: pageStyle.color }}
                     >
                         <span className="font-bold text-sm flex items-center gap-2">
