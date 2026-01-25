@@ -1,10 +1,11 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { Package, Plus, Loader2, Edit, Share2 } from "lucide-react"
+import { Package, Plus, Loader2, Edit, Share2, Wallet, CheckCircle2, AlertCircle } from "lucide-react"
 import { createClient } from "../../../lib/supabase/client"
 import { useAuth } from "../../../lib/AuthContext"
 import { ProductModal } from "../../../components/products/ProductModal"
+import { useRouter, useSearchParams } from "next/navigation"
 
 type Product = {
   id: number
@@ -25,6 +26,23 @@ export default function MinhaLojaPage() {
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [editingProduct, setEditingProduct] = useState<Product | null>(null)
 
+  const [isCheckingStripe, setIsCheckingStripe] = useState(true)
+  const [stripeConnected, setStripeConnected] = useState(false)
+  const router = useRouter()
+  const searchParams = useSearchParams()
+
+  const checkStripeStatus = async () => {
+    if (!user) return
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('stripe_account_id')
+      .eq('id', user.id)
+      .single()
+
+    setStripeConnected(!!profile?.stripe_account_id)
+    setIsCheckingStripe(false)
+  }
+
   const fetchProducts = async () => {
     if (!user) return
     const { data } = await supabase
@@ -39,7 +57,19 @@ export default function MinhaLojaPage() {
 
   useEffect(() => {
     fetchProducts()
+    checkStripeStatus()
   }, [user])
+
+  const handleConnectStripe = async () => {
+    try {
+      const response = await fetch('/api/stripe/connect', { method: 'POST' })
+      const data = await response.json()
+      if (data.url) window.location.href = data.url
+    } catch (error) {
+      console.error("Error connecting to Stripe:", error)
+      alert("Erro ao conectar com Stripe")
+    }
+  }
 
   const openNewProductModal = () => {
     setEditingProduct(null)
@@ -71,22 +101,67 @@ export default function MinhaLojaPage() {
       </div>
 
       <section className="space-y-6">
-        <div className="rounded-[2rem] border border-emerald-500/20 bg-emerald-500/5 p-6 relative overflow-hidden">
+        <div className={`rounded-[2rem] border p-6 relative overflow-hidden transition-all ${stripeConnected
+            ? 'border-emerald-500/20 bg-emerald-500/5'
+            : 'border-amber-500/20 bg-amber-500/5'
+          }`}>
           <div className="absolute top-0 right-0 p-8 opacity-10">
-            <Package size={100} className="text-emerald-500" />
+            {stripeConnected
+              ? <CheckCircle2 size={100} className="text-emerald-500" />
+              : <Wallet size={100} className="text-amber-500" />
+            }
           </div>
-          <div className="relative z-10">
-            <div className="inline-flex items-center gap-2 rounded-full bg-emerald-500/10 px-3 py-1 text-xs font-bold text-emerald-500 mb-2 border border-emerald-500/20">
-              <span className="relative flex h-2 w-2">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
-              </span>
-              Checkout Ativo
+          <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
+            <div>
+              <div className={`inline-flex items-center gap-2 rounded-full px-3 py-1 text-xs font-bold mb-2 border ${stripeConnected
+                  ? 'bg-emerald-500/10 text-emerald-500 border-emerald-500/20'
+                  : 'bg-amber-500/10 text-amber-500 border-amber-500/20'
+                }`}>
+                {stripeConnected ? (
+                  <>
+                    <span className="relative flex h-2 w-2">
+                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                      <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+                    </span>
+                    Carteira Ativa
+                  </>
+                ) : (
+                  <>
+                    <AlertCircle size={12} />
+                    Configuração Necessária
+                  </>
+                )}
+              </div>
+              <h3 className="text-lg font-bold text-vasta-text">
+                {stripeConnected ? "Você está pronto para vender!" : "Ative seus recebimentos"}
+              </h3>
+              <p className="text-sm text-vasta-muted mt-1 max-w-md">
+                {stripeConnected
+                  ? "Seus produtos aparecerão automaticamente no seu perfil público e os pagamentos cairão direto na sua conta bancária."
+                  : "Para vender seus produtos, você precisa conectar uma conta Stripe para receber seus pagamentos de forma segura."
+                }
+              </p>
             </div>
-            <h3 className="text-lg font-bold text-vasta-text">Você está pronto para vender!</h3>
-            <p className="text-sm text-vasta-muted mt-1 max-w-md">
-              Seus produtos aparecerão automaticamente no seu perfil público e os pagamentos cairão direto na sua conta Stripe conectada.
-            </p>
+
+            {!stripeConnected && (
+              <button
+                onClick={handleConnectStripe}
+                className="shrink-0 flex items-center gap-2 bg-amber-500 text-white px-6 py-3 rounded-xl font-bold text-sm hover:bg-amber-600 transition-all shadow-lg shadow-amber-500/20"
+              >
+                <Wallet size={18} />
+                Conectar Carteira
+              </button>
+            )}
+
+            {stripeConnected && (
+              <button
+                onClick={handleConnectStripe} // Re-using logic to login to dashboard if needed, or we custom link
+                className="shrink-0 flex items-center gap-2 bg-vasta-surface border border-vasta-border text-vasta-text px-6 py-3 rounded-xl font-bold text-sm hover:bg-emerald-500/10 hover:text-emerald-500 hover:border-emerald-500/50 transition-all"
+              >
+                <Wallet size={18} />
+                Gerenciar Carteira
+              </button>
+            )}
           </div>
         </div>
 

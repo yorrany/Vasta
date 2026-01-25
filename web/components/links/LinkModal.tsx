@@ -43,7 +43,7 @@ export function LinkModal({ isOpen, onClose, linkToEdit, onSuccess }: LinkModalP
   if (!isOpen || !linkToEdit) return null
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm animate-in fade-in duration-200">
+    <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/60 backdrop-blur-sm animate-in fade-in duration-200">
       <div className="w-full max-w-md bg-vasta-surface rounded-2xl border border-vasta-border shadow-2xl p-6 animate-in zoom-in-95 duration-200">
         <div className="flex justify-between items-center mb-6">
           <h2 className="text-xl font-bold text-vasta-text">
