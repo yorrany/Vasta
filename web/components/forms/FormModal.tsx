@@ -86,59 +86,64 @@ function SortableFieldItem({
         isDragging ? 'shadow-lg z-50' : ''
       }`}
     >
-      <div className="flex items-center gap-3">
-        <button
-          type="button"
-          {...attributes}
-          {...listeners}
-          className="cursor-grab active:cursor-grabbing text-vasta-muted hover:text-vasta-text transition-colors p-1"
-          title="Arrastar para reordenar"
-        >
-          <GripVertical size={18} />
-        </button>
-        <span className="text-xs font-bold text-vasta-muted w-6">#{index + 1}</span>
-        
-        <input
-          type="text"
-          value={field.label}
-          onChange={e => onUpdate(field.id, { label: e.target.value })}
-          placeholder="Nome do campo"
-          className="flex-1 rounded-lg border border-vasta-border bg-vasta-surface px-3 py-2 text-sm text-vasta-text focus:border-vasta-primary focus:ring-1 focus:ring-vasta-primary outline-none"
-        />
-        
-        <select
-          value={field.type}
-          onChange={e => onUpdate(field.id, { type: e.target.value as FormFieldType })}
-          className="rounded-lg border border-vasta-border bg-vasta-surface px-3 py-2 text-sm text-vasta-text focus:border-vasta-primary focus:ring-1 focus:ring-vasta-primary outline-none min-w-[120px]"
-        >
-          <option value="text">Texto</option>
-          <option value="email">Email</option>
-          <option value="tel">Telefone</option>
-          <option value="textarea">Texto Longo</option>
-          <option value="select">Seleção</option>
-        </select>
-        
-        <label className="flex items-center gap-2 text-xs text-vasta-muted whitespace-nowrap">
-          <input
-            type="checkbox"
-            checked={field.required}
-            onChange={e => onUpdate(field.id, { required: e.target.checked })}
-            className="rounded"
-          />
-          Obrigatório
-        </label>
-        
-        {canRemove && (
-          <button
-            type="button"
-            onClick={() => onRemove(field.id)}
-            className="text-vasta-muted hover:text-red-500 transition-colors p-1"
-            title="Remover campo"
-          >
-            <Trash2 size={16} />
-          </button>
-        )}
-      </div>
+                <div className="flex items-start gap-2 sm:gap-3 flex-wrap">
+                    <button
+                      type="button"
+                      {...attributes}
+                      {...listeners}
+                      className="cursor-grab active:cursor-grabbing text-vasta-muted hover:text-vasta-text transition-colors p-1.5 shrink-0 mt-1"
+                      title="Arrastar para reordenar"
+                    >
+                      <GripVertical size={16} />
+                    </button>
+                    <span className="text-xs font-bold text-vasta-muted w-5 shrink-0 mt-2">#{index + 1}</span>
+                    
+                    <div className="flex-1 min-w-[150px]">
+                      <input
+                        type="text"
+                        value={field.label}
+                        onChange={e => onUpdate(field.id, { label: e.target.value })}
+                        placeholder="Nome do campo"
+                        className="w-full rounded-lg border border-vasta-border bg-vasta-surface px-3 py-2 text-sm text-vasta-text focus:border-vasta-primary focus:ring-1 focus:ring-vasta-primary outline-none"
+                      />
+                    </div>
+                    
+                    <div className="w-full sm:w-auto sm:min-w-[140px]">
+                      <select
+                        value={field.type}
+                        onChange={e => onUpdate(field.id, { type: e.target.value as FormFieldType })}
+                        className="w-full rounded-lg border border-vasta-border bg-vasta-surface px-3 py-2 text-sm text-vasta-text focus:border-vasta-primary focus:ring-1 focus:ring-vasta-primary outline-none"
+                      >
+                        <option value="text">Texto</option>
+                        <option value="email">Email</option>
+                        <option value="tel">Telefone</option>
+                        <option value="textarea">Texto Longo</option>
+                        <option value="select">Seleção</option>
+                      </select>
+                    </div>
+                    
+                    <label className="flex items-center gap-1.5 text-xs text-vasta-muted whitespace-nowrap shrink-0">
+                      <input
+                        type="checkbox"
+                        checked={field.required}
+                        onChange={e => onUpdate(field.id, { required: e.target.checked })}
+                        className="rounded"
+                      />
+                      <span className="hidden sm:inline">Obrigatório</span>
+                      <span className="sm:hidden">Obrig.</span>
+                    </label>
+                    
+                    {canRemove && (
+                      <button
+                        type="button"
+                        onClick={() => onRemove(field.id)}
+                        className="text-vasta-muted hover:text-red-500 transition-colors p-1.5 shrink-0"
+                        title="Remover campo"
+                      >
+                        <Trash2 size={16} />
+                      </button>
+                    )}
+                  </div>
       
       {field.type === 'select' && (
         <div>
@@ -283,22 +288,17 @@ export function FormModal({ isOpen, onClose, onSuccess, onBack, embedded = false
       const nextOrder = (maxOrderData?.[0]?.display_order ?? 0) + 1
 
       // Prepare form data
-      const formData = {
-        title: formTitle.trim(),
-        description: formDescription.trim(),
-        destination_email: destinationEmail.trim() || null,
-        fields: fields.map(f => ({
-          label: f.label.trim(),
-          type: f.type,
-          required: f.required,
-          placeholder: f.placeholder?.trim() || null,
-          options: f.options || null,
-          order: f.order
-        }))
-      }
+      const formFields = fields.map(f => ({
+        label: f.label.trim(),
+        type: f.type,
+        required: f.required,
+        placeholder: f.placeholder?.trim() || null,
+        options: f.options || null,
+        order: f.order
+      }))
 
-      // Save form as a link with form metadata
-      const { error } = await supabase
+      // First, save as a link
+      const { data: linkData, error: linkError } = await supabase
         .from('links')
         .insert({
           profile_id: user.id,
@@ -307,17 +307,33 @@ export function FormModal({ isOpen, onClose, onSuccess, onBack, embedded = false
           icon: '📝',
           is_active: true,
           display_order: nextOrder,
-          // Store form data as JSON in a metadata field if available
-          // For now, we'll need to add a metadata column or use a forms table
         })
+        .select()
+        .single()
 
-      if (error) {
-        console.error("Error saving form:", error)
-        throw new Error(error.message || "Erro ao salvar formulário")
+      if (linkError) {
+        console.error("Error saving link:", linkError)
+        throw new Error(linkError.message || "Erro ao salvar formulário")
       }
 
-      // TODO: Save form configuration to a forms table
-      // For MVP, we can store it in a JSON column or create a separate forms table
+      // Then, save form configuration to forms table
+      const { error: formError } = await supabase
+        .from('forms')
+        .insert({
+          profile_id: user.id,
+          link_id: linkData.id,
+          title: formTitle.trim(),
+          description: formDescription.trim() || null,
+          destination_email: destinationEmail.trim() || null,
+          fields: formFields,
+        })
+
+      if (formError) {
+        console.error("Error saving form config:", formError)
+        // Rollback: delete the link if form creation fails
+        await supabase.from('links').delete().eq('id', linkData.id)
+        throw new Error(formError.message || "Erro ao salvar configuração do formulário")
+      }
       
       showNotification('success', 'Formulário criado com sucesso!')
       
@@ -376,60 +392,62 @@ export function FormModal({ isOpen, onClose, onSuccess, onBack, embedded = false
       <div className="flex-1 overflow-y-auto custom-scrollbar min-w-0">
         <h2 className="text-xl font-bold text-vasta-text mb-6">Criar Formulário</h2>
 
-        <form onSubmit={handleSubmit} className="space-y-6">
-          <div>
-            <label className="block text-xs font-semibold text-vasta-muted uppercase mb-1.5">
-              Título do Formulário <span className="text-red-500">*</span>
-            </label>
-            <input
-              type="text"
-              required
-              value={formTitle}
-              onChange={e => setFormTitle(e.target.value)}
-              placeholder="Ex: Formulário de Contato"
-              className="w-full rounded-xl border border-vasta-border bg-vasta-surface-soft px-4 py-3 text-sm text-vasta-text focus:border-vasta-primary focus:ring-1 focus:ring-vasta-primary outline-none transition-all"
-            />
+        <form onSubmit={handleSubmit} className="space-y-5">
+          <div className="grid grid-cols-1 gap-4">
+            <div>
+              <label className="block text-xs font-semibold text-vasta-muted uppercase mb-2">
+                Título do Formulário <span className="text-red-500">*</span>
+              </label>
+              <input
+                type="text"
+                required
+                value={formTitle}
+                onChange={e => setFormTitle(e.target.value)}
+                placeholder="Ex: Formulário de Contato"
+                className="w-full rounded-xl border border-vasta-border bg-vasta-surface-soft px-4 py-3 text-sm text-vasta-text focus:border-vasta-primary focus:ring-1 focus:ring-vasta-primary outline-none transition-all"
+              />
+            </div>
+
+            <div>
+              <label className="block text-xs font-semibold text-vasta-muted uppercase mb-2">
+                Descrição (opcional)
+              </label>
+              <textarea
+                value={formDescription}
+                onChange={e => setFormDescription(e.target.value)}
+                placeholder="Descreva o propósito deste formulário..."
+                rows={2}
+                className="w-full rounded-xl border border-vasta-border bg-vasta-surface-soft px-4 py-3 text-sm text-vasta-text focus:border-vasta-primary focus:ring-1 focus:ring-vasta-primary outline-none transition-all resize-none"
+              />
+            </div>
+
+            <div>
+              <label className="block text-xs font-semibold text-vasta-muted uppercase mb-2">
+                <Mail size={14} className="inline mr-1.5 align-middle" />
+                E-mail de Destino (opcional)
+              </label>
+              <input
+                type="email"
+                value={destinationEmail}
+                onChange={e => setDestinationEmail(e.target.value)}
+                placeholder="exemplo@email.com"
+                className="w-full rounded-xl border border-vasta-border bg-vasta-surface-soft px-4 py-3 text-sm text-vasta-text focus:border-vasta-primary focus:ring-1 focus:ring-vasta-primary outline-none transition-all"
+              />
+              <p className="text-xs text-vasta-muted mt-2 leading-relaxed">
+                As respostas serão <strong>sempre armazenadas</strong> na sua dashboard. Se preenchido, você também receberá notificações por e-mail.
+              </p>
+            </div>
           </div>
 
-          <div>
-            <label className="block text-xs font-semibold text-vasta-muted uppercase mb-1.5">
-              Descrição (opcional)
-            </label>
-            <textarea
-              value={formDescription}
-              onChange={e => setFormDescription(e.target.value)}
-              placeholder="Descreva o propósito deste formulário..."
-              rows={3}
-              className="w-full rounded-xl border border-vasta-border bg-vasta-surface-soft px-4 py-3 text-sm text-vasta-text focus:border-vasta-primary focus:ring-1 focus:ring-vasta-primary outline-none transition-all resize-none"
-            />
-          </div>
-
-          <div>
-            <label className="block text-xs font-semibold text-vasta-muted uppercase mb-1.5">
-              <Mail size={14} className="inline mr-1" />
-              E-mail de Destino (opcional)
-            </label>
-            <input
-              type="email"
-              value={destinationEmail}
-              onChange={e => setDestinationEmail(e.target.value)}
-              placeholder="exemplo@email.com"
-              className="w-full rounded-xl border border-vasta-border bg-vasta-surface-soft px-4 py-3 text-sm text-vasta-text focus:border-vasta-primary focus:ring-1 focus:ring-vasta-primary outline-none transition-all"
-            />
-            <p className="text-xs text-vasta-muted mt-1.5">
-              As respostas do formulário serão enviadas para este e-mail. Deixe vazio para não receber notificações.
-            </p>
-          </div>
-
-          <div>
-            <div className="flex items-center justify-between mb-3">
+          <div className="space-y-3">
+            <div className="flex items-center justify-between">
               <label className="block text-xs font-semibold text-vasta-muted uppercase">
                 Campos do Formulário <span className="text-red-500">*</span>
               </label>
               <button
                 type="button"
                 onClick={addField}
-                className="flex items-center gap-2 text-xs font-bold text-vasta-primary hover:text-vasta-primary-soft transition-colors"
+                className="flex items-center gap-1.5 text-xs font-bold text-vasta-primary hover:text-vasta-primary-soft transition-colors px-3 py-1.5 rounded-lg hover:bg-vasta-primary/10"
               >
                 <Plus size={14} />
                 Adicionar Campo
