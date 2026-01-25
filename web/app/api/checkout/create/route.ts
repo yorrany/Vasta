@@ -93,27 +93,47 @@ export async function POST(request: NextRequest) {
     }
 
     // Criar sessão de checkout
-    const session = await stripe.checkout.sessions.create({
-      customer: customerId,
+    console.log('[DEBUG] Criando sessão Stripe com:', {
+      customerId,
+      priceId,
       mode: 'subscription',
-      line_items: [
-        {
-          price: priceId,
-          quantity: 1
-        }
-      ],
       success_url: `${process.env.NEXT_PUBLIC_APP_URL}/checkout/success?session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${process.env.NEXT_PUBLIC_APP_URL}/?canceled=true`,
-      allow_promotion_codes: true,
-      billing_address_collection: 'required',
-      metadata: {
-        supabase_user_id: user.id,
-        plan_code: planCode,
-        billing_cycle: billingCycle
-      }
+      cancel_url: `${process.env.NEXT_PUBLIC_APP_URL}/?canceled=true`
     })
 
+    let session
+    try {
+      session = await stripe.checkout.sessions.create({
+        customer: customerId,
+        mode: 'subscription',
+        line_items: [
+          {
+            price: priceId,
+            quantity: 1
+          }
+        ],
+        success_url: `${process.env.NEXT_PUBLIC_APP_URL}/checkout/success?session_id={CHECKOUT_SESSION_ID}`,
+        cancel_url: `${process.env.NEXT_PUBLIC_APP_URL}/?canceled=true`,
+        allow_promotion_codes: true,
+        billing_address_collection: 'required',
+        metadata: {
+          supabase_user_id: user.id,
+          plan_code: planCode,
+          billing_cycle: billingCycle
+        }
+      })
+      console.log('[DEBUG] Sessão criada:', { id: session.id, hasClientSecret: !!session.client_secret })
+    } catch (stripeError: any) {
+      console.error('[ERROR] Erro ao criar sessão Stripe:', stripeError.message)
+      console.error('[ERROR] Stripe error details:', stripeError)
+      return NextResponse.json(
+        { error: `Erro do Stripe: ${stripeError.message}` },
+        { status: 500 }
+      )
+    }
+
     if (!session.client_secret) {
+      console.error('[ERROR] Sessão criada mas sem client_secret:', session)
       return NextResponse.json(
         { error: 'Erro ao criar sessão de checkout' },
         { status: 500 }
@@ -125,10 +145,11 @@ export async function POST(request: NextRequest) {
       sessionId: session.id
     })
 
-  } catch (error) {
+  } catch (error: any) {
     console.error('Erro ao criar checkout:', error)
+    console.error('Stack trace:', error.stack)
     return NextResponse.json(
-      { error: 'Erro interno ao criar checkout' },
+      { error: error.message || 'Erro interno ao criar checkout' },
       { status: 500 }
     )
   }
