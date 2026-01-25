@@ -182,16 +182,16 @@ export function PublicProfile({ username }: PublicProfileProps) {
     }
 
     return (
-        <div style={pageStyle} className="min-h-screen w-full transition-colors duration-500 overflow-x-hidden flex flex-col items-center">
+        <div style={pageStyle} className="min-h-screen w-full transition-colors duration-500 flex flex-col items-center">
 
             {/* Profile Identity - Centered Column */}
-            <aside className={`w-full lg:w-1/2 shrink-0 flex flex-col relative z-10 ${currentThemeConfig?.sidebar || 'bg-black/5 backdrop-blur-sm'}`}>
-                <div className="flex-1 flex flex-col lg:justify-center p-4 lg:p-8 w-full max-w-lg mx-auto lg:max-w-none h-full">
+            <aside className={`w-full max-w-3xl shrink-0 flex flex-col relative z-10 ${currentThemeConfig?.sidebar || 'bg-transparent'}`}>
+                <div className="flex-1 flex flex-col items-center p-4 lg:p-8 w-full h-full">
 
                     {/* Profile Card */}
-                    <div className={`relative overflow-hidden flex-1 flex flex-col ${currentThemeConfig?.card || 'bg-white/5 backdrop-blur-sm lg:rounded-[2.5rem] lg:border lg:border-white/10 lg:shadow-2xl'}`}>
+                    <div className={`relative w-full overflow-hidden flex flex-col ${currentThemeConfig?.card || 'bg-white/5 backdrop-blur-sm rounded-[2rem] border border-white/10 shadow-2xl'}`}>
                         {/* Cover */}
-                        <div className="h-48 lg:h-64 w-full bg-black/10 relative shrink-0">
+                        <div className="h-48 lg:h-80 w-full bg-black/10 relative shrink-0">
                             {cover_image ? (
                                 <img src={cover_image} className="h-full w-full object-cover" alt="Cover" />
                             ) : (
@@ -238,10 +238,10 @@ export function PublicProfile({ username }: PublicProfileProps) {
                         </div>
 
                         {/* Profile Info */}
-                        <div className="px-6 lg:px-8 -mt-16 relative z-10 pb-8 flex flex-col items-center lg:items-start flex-1 text-center lg:text-left">
+                        <div className="px-6 lg:px-10 -mt-16 relative z-10 pb-10 flex flex-col items-center text-center">
                             {/* Avatar */}
                             <div className="mb-6">
-                                <div className={`h-32 w-32 lg:h-40 lg:w-40 overflow-hidden ${currentThemeConfig?.avatar || 'rounded-full border-[6px] shadow-2xl'}`}
+                                <div className={`h-32 w-32 lg:h-48 lg:w-48 overflow-hidden ${currentThemeConfig?.avatar || 'rounded-full border-[6px] shadow-2xl'}`}
                                     style={currentThemeConfig ? {} : { borderColor: pageStyle.backgroundColor }}
                                 >
                                     {profile_image ? (
@@ -255,18 +255,11 @@ export function PublicProfile({ username }: PublicProfileProps) {
                             </div>
 
                             {/* Text Info */}
-                            <div className="w-full">
-                                <h1 className="text-3xl lg:text-4xl font-bold tracking-tight mb-3 lg:mb-4">{profile.display_name || `@${profile.username}`}</h1>
+                            <div className="w-full max-w-2xl">
+                                <h1 className="text-3xl lg:text-5xl font-bold tracking-tight mb-4">{profile.display_name || `@${profile.username}`}</h1>
                                 {profile.bio && (
-                                    <p className="text-sm lg:text-base opacity-80 leading-relaxed max-w-xs mx-auto lg:mx-0 font-medium">{profile.bio}</p>
+                                    <p className="text-base lg:text-lg opacity-80 leading-relaxed font-medium">{profile.bio}</p>
                                 )}
-                            </div>
-
-                            {/* Desktop Footer in Sidebar */}
-                            <div className="hidden lg:flex mt-auto pt-12 items-center gap-2 opacity-30 hover:opacity-100 transition-opacity">
-                                <a href="https://vasta.pro" target="_blank" rel="noopener noreferrer" className="flex items-center transition-transform hover:scale-105">
-                                    <VastaLogo className="h-4 w-auto fill-current" />
-                                </a>
                             </div>
                         </div>
                     </div>
@@ -274,7 +267,7 @@ export function PublicProfile({ username }: PublicProfileProps) {
             </aside>
 
             {/* Content Scroll - Centered Column */}
-            <main className="flex-1 w-full lg:w-1/2 px-6 py-8 lg:p-12 space-y-12 pb-32">
+            <main className="flex-1 w-full max-w-3xl px-4 py-8 lg:p-0 space-y-12 pb-32">
 
                 {/* Links Section */}
                 <div className={`mx-auto ${currentThemeConfig ? 'w-full max-w-5xl' : 'max-w-2xl lg:max-w-4xl'}`}>
