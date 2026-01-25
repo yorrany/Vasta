@@ -442,7 +442,10 @@ export default function DashboardLayout({ children }: Props) {
                     </div>
                     <div className="min-w-0">
                       <p className="truncate text-sm font-bold text-vasta-text">@{settings.username}</p>
-                      <p className="truncate text-[10px] text-vasta-muted">Plano Grátis</p>
+                      <p className="truncate text-[10px] text-vasta-muted">
+                        {settings.planCode === 'business' ? 'Plano Business' :
+                          settings.planCode === 'pro' ? 'Plano Pro' : 'Plano Grátis'}
+                      </p>
                     </div>
                   </div>
                   <ChevronsUpDown className="h-4 w-4 text-vasta-muted" />
@@ -478,10 +481,12 @@ export default function DashboardLayout({ children }: Props) {
 
                       <div className="my-1 h-px bg-vasta-border/50" />
 
-                      <button className="group flex w-full items-center gap-2 rounded-lg bg-gradient-to-r from-vasta-text to-stone-800 px-2 py-2 text-xs font-bold text-vasta-bg shadow-sm transition-all hover:opacity-90">
-                        <Sparkles size={14} className="text-amber-300" />
-                        Fazer Upgrade
-                      </button>
+                      {settings.planCode === 'start' && (
+                        <button className="group flex w-full items-center gap-2 rounded-lg bg-gradient-to-r from-vasta-text to-stone-800 px-2 py-2 text-xs font-bold text-vasta-bg shadow-sm transition-all hover:opacity-90">
+                          <Sparkles size={14} className="text-amber-300" />
+                          Fazer Upgrade
+                        </button>
+                      )}
 
                       <div className="my-1 h-px bg-vasta-border/50" />
 

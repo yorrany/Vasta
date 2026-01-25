@@ -56,16 +56,27 @@ export function PremiumLinkCard({ link, theme, themeConfig }: PremiumLinkCardPro
 
     // *** HEADER ITEM RENDER ***
     if (link.url.startsWith('header://')) {
+        const subtitle = link.url.replace('header://', '')
         return (
             <div className={`w-full py-4 px-2 ${theme === 'neo' ? 'text-black' : theme === 'noir' ? 'text-white' : 'text-gray-800'}`}>
                 <h2 className={`
-                    text-center font-bold
-                    ${theme === 'neo' ? 'text-2xl uppercase tracking-tighter border-b-4 border-black pb-2' : ''}
-                    ${theme === 'noir' ? 'text-2xl font-serif tracking-widest border-b border-white/20 pb-4' : ''}
+                    text-center font-bold mb-1
+                    ${theme === 'neo' ? 'text-2xl uppercase tracking-tighter' : ''}
+                    ${theme === 'noir' ? 'text-2xl font-serif tracking-widest' : ''}
                     ${theme === 'bento' ? 'text-xl tracking-tight text-gray-900' : ''}
                 `}>
                     {link.title}
                 </h2>
+                {subtitle && (
+                    <p className={`
+                        text-center text-sm
+                        ${theme === 'neo' ? 'font-medium uppercase tracking-wide opacity-80 border-b-4 border-black pb-4' : ''}
+                        ${theme === 'noir' ? 'font-light tracking-wide opacity-60 border-b border-white/20 pb-4' : ''}
+                        ${theme === 'bento' ? 'text-gray-500 pb-2' : ''}
+                    `}>
+                        {subtitle}
+                    </p>
+                )}
             </div>
         )
     }

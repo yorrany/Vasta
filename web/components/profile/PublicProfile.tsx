@@ -277,57 +277,77 @@ export function PublicProfile({ username }: PublicProfileProps) {
             <main className="flex-1 w-full lg:h-screen lg:overflow-y-auto px-6 py-8 lg:p-16 lg:py-24 space-y-12 pb-32">
 
                 {/* Links Section */}
-                <div className="space-y-4 max-w-2xl mx-auto">
-                    {links.map((link) => {
-                        // Premium Themes (Noir, Neo, Bento)
-                        // Uses the specialized component with OG Image Fetching
-                        if (currentThemeConfig) {
-                            return <PremiumLinkCard key={link.id} link={link} theme={theme as any} themeConfig={currentThemeConfig} />
-                        }
+                <div className={`mx-auto ${currentThemeConfig ? 'w-full max-w-5xl' : 'max-w-2xl lg:max-w-4xl'}`}>
+                    {/* Bento Grid Layout Container */}
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 lg:gap-6 auto-rows-min">
+                        {links.map((link) => {
+                            // Check for full-width items (Headers, Text, or Specific future integrations)
+                            const isFullWidth = link.url.startsWith('header://') || link.url.startsWith('text://') || link.url.startsWith('spotify://')
 
-                        // Semi-Premium/Classic Logic for Standard Headers/Text
-                        if (link.url.startsWith('header://')) {
+                            // Premium Themes (Noir, Neo, Bento)
+                            // Uses the specialized component with OG Image Fetching
+                            if (currentThemeConfig) {
+                                return (
+                                    <div key={link.id} className={`${isFullWidth ? 'lg:col-span-2' : ''}`}>
+                                        <PremiumLinkCard link={link} theme={theme as any} themeConfig={currentThemeConfig} />
+                                    </div>
+                                )
+                            }
+
+                            // Semi-Premium/Classic Logic for Standard Headers/Text
+                            if (link.url.startsWith('header://')) {
+                                const subtitle = link.url.replace('header://', '')
+                                return (
+                                    <div key={link.id} className="text-center w-full pt-6 pb-2 lg:col-span-2">
+                                        <h2 className="text-xl lg:text-2xl font-bold" style={{ color: pageStyle.color }}>
+                                            {link.title}
+                                        </h2>
+                                        {subtitle && (
+                                            <p className="text-sm lg:text-base opacity-70 mt-1" style={{ color: pageStyle.color }}>
+                                                {subtitle}
+                                            </p>
+                                        )}
+                                    </div>
+                                )
+                            }
+                            if (link.url.startsWith('text://')) {
+                                return (
+                                    <div key={link.id} className="lg:col-span-2">
+                                        <p className="text-sm lg:text-base text-center w-full pb-4 opacity-80 whitespace-pre-wrap" style={{ color: pageStyle.color }}>
+                                            {link.title}
+                                        </p>
+                                    </div>
+                                )
+                            }
+
+                            // Classic Themes (Light, Dark, Adaptive)
+                            // Uses the standard Button Layout - Now in Grid
                             return (
-                                <h2 key={link.id} className="text-xl lg:text-2xl font-bold text-center w-full pt-6 pb-2" style={{ color: pageStyle.color }}>
-                                    {link.title}
-                                </h2>
-                            )
-                        }
-                        if (link.url.startsWith('text://')) {
-                            return (
-                                <p key={link.id} className="text-sm lg:text-base text-center w-full pb-4 opacity-80 whitespace-pre-wrap" style={{ color: pageStyle.color }}>
-                                    {link.title}
-                                </p>
-                            )
-                        }
+                                <a
+                                    key={link.id}
+                                    href={link.url}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className={`block w-full p-4 lg:p-5 group relative overflow-hidden rounded-2xl transition-all duration-300 hover:scale-[1.02] active:scale-[0.98] shadow-sm hover:shadow-xl border border-transparent`}
+                                    style={{
+                                        ...(link_style === 'solid' ? { backgroundColor: accent_color, color: '#fff' } : {}),
+                                        ...(link_style === 'outline' ? { border: `2px solid ${accent_color}`, color: accent_color } : {}),
+                                        ...(link_style === 'glass' ? { backgroundColor: theme === 'light' ? 'rgba(0,0,0,0.05)' : 'rgba(255,255,255,0.08)', backdropFilter: 'blur(10px)', border: '1px solid rgba(255,255,255,0.1)' } : {}),
+                                        // Fallback default
+                                        ...(!['solid', 'outline'].includes(link_style) && link_style !== 'glass' ? { backgroundColor: accent_color } : {})
+                                    }}
+                                >
+                                    <div className="flex items-center justify-between relative z-10">
+                                        <span className="font-medium text-lg text-center w-full">{link.title}</span>
+                                        <ExternalLink size={16} className="absolute right-0 opacity-0 group-hover:opacity-100 transition-opacity" />
+                                    </div>
 
-                        // Classic Themes (Light, Dark, Adaptive)
-                        // Uses the standard Button Layout
-                        return (
-                            <a
-                                key={link.id}
-                                href={link.url}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className={`block w-full p-4 lg:p-5 group relative overflow-hidden rounded-2xl transition-all duration-300 hover:scale-[1.02] active:scale-[0.98] shadow-sm hover:shadow-xl border border-transparent`}
-                                style={{
-                                    ...(link_style === 'solid' ? { backgroundColor: accent_color, color: '#fff' } : {}),
-                                    ...(link_style === 'outline' ? { border: `2px solid ${accent_color}`, color: accent_color } : {}),
-                                    ...(link_style === 'glass' ? { backgroundColor: theme === 'light' ? 'rgba(0,0,0,0.05)' : 'rgba(255,255,255,0.08)', backdropFilter: 'blur(10px)', border: '1px solid rgba(255,255,255,0.1)' } : {}),
-                                    // Fallback default
-                                    ...(!['solid', 'outline'].includes(link_style) && link_style !== 'glass' ? { backgroundColor: accent_color } : {})
-                                }}
-                            >
-                                <div className="flex items-center justify-between relative z-10">
-                                    <span className="font-medium text-lg text-center w-full">{link.title}</span>
-                                    <ExternalLink size={16} className="absolute right-0 opacity-0 group-hover:opacity-100 transition-opacity" />
-                                </div>
-
-                                {/* Hover Effect Light */}
-                                <div className="absolute inset-0 bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
-                            </a>
-                        )
-                    })}
+                                    {/* Hover Effect Light */}
+                                    <div className="absolute inset-0 bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
+                                </a>
+                            )
+                        })}
+                    </div>
 
                     {(!links || links.length === 0) && (
                         <div className="text-center opacity-50 py-12">
@@ -338,7 +358,9 @@ export function PublicProfile({ username }: PublicProfileProps) {
 
                 {/* Instagram Section */}
                 {profile.id && (
-                    <InstagramFeedSection userId={profile.id} theme={theme} />
+                    <div className="w-full max-w-5xl mx-auto">
+                        <InstagramFeedSection userId={profile.id} theme={theme} />
+                    </div>
                 )}
 
                 {/* Products Section */}

@@ -37,27 +37,38 @@ const PLATFORMS: Record<string, PlatformConfig> = {
 export function LinkForm({ initialTitle = "", initialUrl = "", linkId, platform, onSuccess, onCancel }: LinkFormProps) {
     const [title, setTitle] = useState(initialTitle)
     const [url, setUrl] = useState(initialUrl)
+    const [subtitle, setSubtitle] = useState("")
     const [loading, setLoading] = useState(false)
 
     const { user } = useAuth()
     const supabase = createClient()
 
-    // Get config for current platform
-    const platformConfig = platform ? PLATFORMS[platform] : null
+    // Detect platform from URL if not explicitly provided (for Edit mode)
+    const activePlatform = platform || (url.startsWith('header://') ? 'header' : url.startsWith('text://') ? 'text' : null)
+    const platformConfig = activePlatform ? PLATFORMS[activePlatform] : (platform ? PLATFORMS[platform] : null)
 
     // Initialize logic
     useEffect(() => {
         // If it's a generic link and empty, set https:// default
-        if (!platform && !initialUrl && !url) {
+        if (!activePlatform && !initialUrl && !url) {
             setUrl('https://')
         }
-        // If platform exists, maybe set title default?
-        if (platform && !initialTitle && !title) {
-            if (platform === 'header') setTitle('Novo Título')
-            else if (platform === 'text') setTitle('Novo Texto')
-            else setTitle(platform.charAt(0).toUpperCase() + platform.slice(1))
+
+        // Parse subtitle from URL for Headers
+        if (activePlatform === 'header' && url.startsWith('header://')) {
+            const extractedSubtitle = url.replace('header://', '')
+            if (extractedSubtitle && !subtitle) {
+                setSubtitle(extractedSubtitle)
+            }
         }
-    }, [platform, initialUrl])
+
+        // Default Titles for new items
+        if (activePlatform && !initialTitle && !title) {
+            if (activePlatform === 'header') setTitle('Novo Título')
+            else if (activePlatform === 'text') setTitle('Novo Texto')
+            else setTitle(activePlatform.charAt(0).toUpperCase() + activePlatform.slice(1))
+        }
+    }, [activePlatform, initialUrl, url])
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
@@ -70,18 +81,37 @@ export function LinkForm({ initialTitle = "", initialUrl = "", linkId, platform,
             // Smart URL construction
             if (platformConfig) {
                 if (platformConfig.noUrl) {
-                    finalUrl = platformConfig.prefix // e.g. 'header://'
+                    if (activePlatform === 'header') {
+                        // Force subtitle requirement as requested
+                        if (!subtitle.trim()) {
+                            alert("O subtítulo é obrigatório.")
+                            setLoading(false)
+                            return
+                        }
+                        finalUrl = `header://${subtitle.trim()}`
+                    } else if (activePlatform === 'text') {
+                        finalUrl = `text://` // Content is actually in Title for text type currently? 
+                        // Wait, previous implementation for Text:
+                        // "text: { label: 'Texto', prefix: 'text://', placeholder: 'Seu texto aqui', noUrl: true }"
+                        // And Title input label became "Conteúdo".
+                        // So for 'text', the 'title' state holds the content. The URL is just a marker.
+                        // Let's keep that consistently.
+                        finalUrl = `text://`
+                    } else {
+                        finalUrl = platformConfig.prefix
+                    }
                 } else {
+                    // ... existing logic for social inputs
                     // Remove prefix if user pasted full URL (basic check)
                     // e.g. user pasted https://instagram.com/user -> we want just 'user' logic or handle it gracefully
                     // Easier: Only prepend if it doesn't look like a URL
-                    if (platform === 'email') {
+                    if (activePlatform === 'email') {
                         if (!finalUrl.startsWith('mailto:')) finalUrl = `mailto:${finalUrl}`
                     } else {
                         const isUrl = finalUrl.startsWith('http') || finalUrl.includes('.com')
                         if (!isUrl) {
                             // Clean @ if present for some platforms
-                            if ((platform === 'tiktok' || platform === 'youtube' || platform === 'twitter' || platform === 'instagram') && finalUrl.startsWith('@')) {
+                            if ((activePlatform === 'tiktok' || activePlatform === 'youtube' || activePlatform === 'twitter' || activePlatform === 'instagram') && finalUrl.startsWith('@')) {
                                 finalUrl = finalUrl.substring(1)
                             }
                             finalUrl = `${platformConfig.prefix}${finalUrl}`
@@ -104,7 +134,7 @@ export function LinkForm({ initialTitle = "", initialUrl = "", linkId, platform,
 
                 if (error) throw error
             } else {
-                // Create
+                // ... create logic remains same ...
                 const { data: maxOrderData } = await supabase
                     .from('links')
                     .select('display_order')
@@ -140,7 +170,7 @@ export function LinkForm({ initialTitle = "", initialUrl = "", linkId, platform,
         <form onSubmit={handleSubmit} className="space-y-4">
             <div>
                 <label className="block text-xs font-semibold text-vasta-muted uppercase mb-1.5">
-                    {platformConfig?.noUrl ? (platform === 'header' ? 'Texto do Título' : 'Conteúdo') : 'Título'}
+                    {platformConfig?.noUrl ? (activePlatform === 'header' ? 'Título' : 'Conteúdo') : 'Título'}
                 </label>
                 <input
                     type="text"
@@ -152,16 +182,33 @@ export function LinkForm({ initialTitle = "", initialUrl = "", linkId, platform,
                 />
             </div>
 
+            {activePlatform === 'header' && (
+                <div>
+                    <label className="block text-xs font-semibold text-vasta-muted uppercase mb-1.5">
+                        Subtítulo <span className="text-red-500">*</span>
+                    </label>
+                    <input
+                        type="text"
+                        required
+                        placeholder="Adicione um subtítulo explicativo"
+                        value={subtitle}
+                        onChange={e => setSubtitle(e.target.value)}
+                        className="w-full rounded-xl border border-vasta-border bg-vasta-surface-soft px-4 py-3 text-sm text-vasta-text focus:border-vasta-primary focus:ring-1 focus:ring-vasta-primary outline-none transition-all"
+                    />
+                </div>
+            )}
+
             {!platformConfig?.noUrl && (
                 <div>
                     <label className="block text-xs font-semibold text-vasta-muted uppercase mb-1.5">
                         {platformConfig?.label || 'URL'}
                     </label>
                     <div className="relative">
+                        {/* URL INPUT RENDERING ... */}
                         {platformConfig ? (
                             <div className="flex items-center">
                                 <input
-                                    type={platform === 'email' ? "email" : "text"}
+                                    type={activePlatform === 'email' ? "email" : "text"}
                                     required
                                     placeholder={platformConfig.placeholder}
                                     value={url}

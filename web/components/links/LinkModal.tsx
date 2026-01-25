@@ -58,6 +58,7 @@ export function LinkModal({ isOpen, onClose, linkToEdit, onSuccess }: LinkModalP
           initialTitle={linkToEdit.title}
           initialUrl={linkToEdit.url}
           linkId={linkToEdit.id}
+          platform={linkToEdit.url.startsWith('header://') ? 'header' : linkToEdit.url.startsWith('text://') ? 'text' : undefined}
           onSuccess={() => {
             onSuccess()
             onClose()
