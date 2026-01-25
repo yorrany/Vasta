@@ -312,7 +312,7 @@ export function PublicProfile({ username }: PublicProfileProps) {
                             currentBuffer = [];
 
                             return (
-                                <div key={`group-${keyPrefix}`} className="columns-1 lg:columns-2 gap-4 lg:gap-6 space-y-4 lg:space-y-6">
+                                <div key={`group-${keyPrefix}`} className="flex flex-col gap-4 w-full">
                                     {bufferCopy.map((link) => (
                                         <div key={link.id} className="break-inside-avoid">
                                             {/* Standard Link Item Render */}
