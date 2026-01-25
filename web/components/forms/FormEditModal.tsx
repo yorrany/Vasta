@@ -408,6 +408,12 @@ export function FormEditModal({ isOpen, onClose, formId, onSuccess }: FormEditMo
                         </div>
                     </div>
 
+                    <div className="p-3 rounded-xl bg-blue-500/5 border border-blue-500/20">
+                        <p className="text-xs text-blue-400 font-medium">
+                            ℹ️ Respostas anteriores não serão afetadas. Elas mantêm seus dados originais mesmo após editar os campos.
+                        </p>
+                    </div>
+
                     <div className="space-y-3">
                         <div className="flex items-center justify-between">
                             <label className="block text-xs font-semibold text-vasta-muted uppercase">

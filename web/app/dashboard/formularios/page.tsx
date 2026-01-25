@@ -1,8 +1,8 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { 
-  FileText, Loader2, Mail, Calendar, Eye, EyeOff, 
+import {
+  FileText, Loader2, Mail, Calendar, Eye, EyeOff,
   Trash2, Search, Filter, Download, CheckCircle2, XCircle
 } from "lucide-react"
 import { createClient } from "../../../lib/supabase/client"
@@ -117,7 +117,7 @@ export default function FormulariosPage() {
 
       if (error) throw error
 
-      setSubmissions(prev => prev.map(s => 
+      setSubmissions(prev => prev.map(s =>
         s.id === id ? { ...s, read } : s
       ))
     } catch (error) {
@@ -171,9 +171,9 @@ export default function FormulariosPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-vasta-text mb-2">Formulários</h1>
+          <h1 className="text-3xl font-bold text-vasta-text mb-2">Respostas</h1>
           <p className="text-vasta-muted">
-            Visualize e gerencie todas as respostas dos seus formulários
+            Visualize e gerencie todas as respostas recebidas dos seus formulários
           </p>
         </div>
       </div>
@@ -186,7 +186,7 @@ export default function FormulariosPage() {
               <FileText className="text-blue-500" size={20} />
             </div>
             <div>
-              <p className="text-xs text-vasta-muted uppercase">Total de Formulários</p>
+              <p className="text-xs text-vasta-muted uppercase">Total de Formulários Ativos</p>
               <p className="text-2xl font-bold text-vasta-text">{forms.length}</p>
             </div>
           </div>
@@ -239,11 +239,10 @@ export default function FormulariosPage() {
         </select>
         <button
           onClick={() => setFilterUnread(!filterUnread)}
-          className={`flex items-center gap-2 rounded-xl border border-vasta-border px-4 py-3 text-sm font-bold transition-all ${
-            filterUnread
+          className={`flex items-center gap-2 rounded-xl border border-vasta-border px-4 py-3 text-sm font-bold transition-all ${filterUnread
               ? 'bg-vasta-primary text-white border-vasta-primary'
               : 'bg-vasta-surface-soft text-vasta-text hover:bg-vasta-surface'
-          }`}
+            }`}
         >
           <Filter size={16} />
           Não lidos
@@ -256,9 +255,9 @@ export default function FormulariosPage() {
           <FileText className="mx-auto text-vasta-muted mb-4" size={48} />
           <h3 className="text-lg font-bold text-vasta-text mb-2">Nenhuma submissão encontrada</h3>
           <p className="text-sm text-vasta-muted">
-            {submissions.length === 0 
+            {submissions.length === 0
               ? "Ainda não há respostas nos seus formulários."
-              : "Nenhuma submissão corresponde aos filtros selecionados."}
+              : "Nenhuma resposta corresponde aos filtros selecionados."}
           </p>
         </div>
       ) : (
@@ -266,11 +265,10 @@ export default function FormulariosPage() {
           {filteredSubmissions.map(submission => (
             <div
               key={submission.id}
-              className={`p-5 rounded-2xl border transition-all ${
-                submission.read
+              className={`p-5 rounded-2xl border transition-all ${submission.read
                   ? 'border-vasta-border bg-vasta-surface-soft'
                   : 'border-vasta-primary/30 bg-vasta-primary/5'
-              }`}
+                }`}
             >
               <div className="flex items-start justify-between gap-4 mb-4">
                 <div className="flex-1 min-w-0">
@@ -294,11 +292,10 @@ export default function FormulariosPage() {
                 <div className="flex items-center gap-2 shrink-0">
                   <button
                     onClick={() => markAsRead(submission.id, !submission.read)}
-                    className={`p-2 rounded-lg transition-colors ${
-                      submission.read
+                    className={`p-2 rounded-lg transition-colors ${submission.read
                         ? 'text-vasta-muted hover:text-vasta-text hover:bg-vasta-surface-soft'
                         : 'text-vasta-primary hover:bg-vasta-primary/10'
-                    }`}
+                      }`}
                     title={submission.read ? 'Marcar como não lido' : 'Marcar como lido'}
                   >
                     {submission.read ? <EyeOff size={18} /> : <Eye size={18} />}
