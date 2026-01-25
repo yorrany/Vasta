@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Loader2, Save } from "lucide-react"
 import { createClient } from "../../lib/supabase/client"
 import { useAuth } from "../../lib/AuthContext"
@@ -9,11 +9,23 @@ interface LinkFormProps {
     initialTitle?: string
     initialUrl?: string
     linkId?: number
+    platform?: string
     onSuccess: () => void
     onCancel?: () => void
 }
 
-export function LinkForm({ initialTitle = "", initialUrl = "", linkId, onSuccess, onCancel }: LinkFormProps) {
+const PLATFORMS: Record<string, { label: string, prefix: string, placeholder: string }> = {
+    instagram: { label: 'Usuário', prefix: 'https://instagram.com/', placeholder: 'usuario' },
+    tiktok: { label: 'Usuário', prefix: 'https://tiktok.com/@', placeholder: 'usuario' },
+    twitter: { label: 'Usuário', prefix: 'https://x.com/', placeholder: 'usuario' },
+    youtube: { label: 'Usuário', prefix: 'https://youtube.com/@', placeholder: 'canal' },
+    linkedin: { label: 'Perfil', prefix: 'https://linkedin.com/in/', placeholder: 'usuario' },
+    whatsapp: { label: 'Número', prefix: 'https://wa.me/', placeholder: '5511999999999' },
+    email: { label: 'Email', prefix: 'mailto:', placeholder: 'nome@exemplo.com' },
+    spotify: { label: 'Link', prefix: 'https://open.spotify.com/', placeholder: 'Link do Spotify' },
+}
+
+export function LinkForm({ initialTitle = "", initialUrl = "", linkId, platform, onSuccess, onCancel }: LinkFormProps) {
     const [title, setTitle] = useState(initialTitle)
     const [url, setUrl] = useState(initialUrl)
     const [loading, setLoading] = useState(false)
@@ -21,23 +33,64 @@ export function LinkForm({ initialTitle = "", initialUrl = "", linkId, onSuccess
     const { user } = useAuth()
     const supabase = createClient()
 
+    // Get config for current platform
+    const platformConfig = platform ? PLATFORMS[platform] : null
+
+    // Initialize logic
+    useEffect(() => {
+        // If it's a generic link and empty, set https:// default
+        if (!platform && !initialUrl && !url) {
+            setUrl('https://')
+        }
+        // If platform exists, maybe set title default?
+        if (platform && !initialTitle && !title) {
+            // Capitalize first letter
+            setTitle(platform.charAt(0).toUpperCase() + platform.slice(1))
+        }
+    }, [platform, initialUrl])
+
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
         if (!user) return
         setLoading(true)
 
         try {
+            let finalUrl = url.trim()
+
+            // Smart URL construction
+            if (platformConfig) {
+                // Remove prefix if user pasted full URL (basic check)
+                // e.g. user pasted https://instagram.com/user -> we want just 'user' logic or handle it gracefully
+                // Easier: Only prepend if it doesn't look like a URL
+                if (platform === 'email') {
+                    if (!finalUrl.startsWith('mailto:')) finalUrl = `mailto:${finalUrl}`
+                } else {
+                    const isUrl = finalUrl.startsWith('http') || finalUrl.includes('.com')
+                    if (!isUrl) {
+                        // Clean @ if present for some platforms
+                        if ((platform === 'tiktok' || platform === 'youtube' || platform === 'twitter' || platform === 'instagram') && finalUrl.startsWith('@')) {
+                            finalUrl = finalUrl.substring(1)
+                        }
+                        finalUrl = `${platformConfig.prefix}${finalUrl}`
+                    }
+                }
+            } else {
+                // Generic Link: Ensure protocol
+                if (!finalUrl.startsWith('http') && !finalUrl.startsWith('mailto:')) {
+                    finalUrl = `https://${finalUrl}`
+                }
+            }
+
             if (linkId) {
                 // Update
                 const { error } = await supabase
                     .from('links')
-                    .update({ title, url })
+                    .update({ title, url: finalUrl })
                     .eq('id', linkId)
 
                 if (error) throw error
             } else {
                 // Create
-                // First get the max order to append to the end
                 const { data: maxOrderData } = await supabase
                     .from('links')
                     .select('display_order')
@@ -52,7 +105,7 @@ export function LinkForm({ initialTitle = "", initialUrl = "", linkId, onSuccess
                     .insert({
                         profile_id: user.id,
                         title,
-                        url,
+                        url: finalUrl,
                         is_active: true,
                         display_order: nextOrder
                     })
@@ -72,11 +125,13 @@ export function LinkForm({ initialTitle = "", initialUrl = "", linkId, onSuccess
     return (
         <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-                <label className="block text-xs font-semibold text-vasta-muted uppercase mb-1.5">Título</label>
+                <label className="block text-xs font-semibold text-vasta-muted uppercase mb-1.5">
+                    Título
+                </label>
                 <input
                     type="text"
                     required
-                    placeholder="Ex: Meu Portfólio"
+                    placeholder="Ex: Meu Link"
                     value={title}
                     onChange={e => setTitle(e.target.value)}
                     className="w-full rounded-xl border border-vasta-border bg-vasta-surface-soft px-4 py-3 text-sm text-vasta-text focus:border-vasta-primary focus:ring-1 focus:ring-vasta-primary outline-none transition-all"
@@ -84,32 +139,47 @@ export function LinkForm({ initialTitle = "", initialUrl = "", linkId, onSuccess
             </div>
 
             <div>
-                <label className="block text-xs font-semibold text-vasta-muted uppercase mb-1.5">URL</label>
-                <input
-                    type="url"
-                    required
-                    placeholder="https://..."
-                    value={url}
-                    onChange={e => setUrl(e.target.value)}
-                    className="w-full rounded-xl border border-vasta-border bg-vasta-surface-soft px-4 py-3 text-sm text-vasta-text focus:border-vasta-primary focus:ring-1 focus:ring-vasta-primary outline-none transition-all"
-                />
+                <label className="block text-xs font-semibold text-vasta-muted uppercase mb-1.5">
+                    {platformConfig?.label || 'URL'}
+                </label>
+                <div className="relative">
+                    {platformConfig ? (
+                        <div className="flex items-center">
+                            {/* Prefix Visual for User (optional, or just using placeholder) */}
+                            {/* Let's keep it simple with placeholder for now as requested, but smart input is mainly about logic */}
+                            <input
+                                type={platform === 'email' ? "email" : "text"}
+                                required
+                                placeholder={platformConfig.placeholder}
+                                value={url}
+                                onChange={e => setUrl(e.target.value)}
+                                className="w-full rounded-xl border border-vasta-border bg-vasta-surface-soft px-4 py-3 text-sm text-vasta-text focus:border-vasta-primary focus:ring-1 focus:ring-vasta-primary outline-none transition-all"
+                            />
+                        </div>
+                    ) : (
+                        <input
+                            type="text"
+                            required
+                            placeholder="https://..."
+                            value={url}
+                            onChange={e => setUrl(e.target.value)}
+                            className="w-full rounded-xl border border-vasta-border bg-vasta-surface-soft px-4 py-3 text-sm text-vasta-text focus:border-vasta-primary focus:ring-1 focus:ring-vasta-primary outline-none transition-all"
+                        />
+                    )}
+                </div>
+                {platformConfig && (
+                    <p className="text-[10px] text-vasta-muted mt-1.5 ml-1">
+                        Digite apenas o {platformConfig.label.toLowerCase()}.
+                    </p>
+                )}
             </div>
 
-            <div className="flex gap-3 pt-4">
-                {onCancel && (
-                    <button
-                        type="button"
-                        onClick={onCancel}
-                        disabled={loading}
-                        className="flex-1 flex items-center justify-center gap-2 rounded-xl border border-vasta-border bg-transparent text-vasta-text py-3 text-sm font-bold hover:bg-vasta-surface-soft transition-all disabled:opacity-50"
-                    >
-                        Cancelar
-                    </button>
-                )}
+            <div className="pt-4">
+                {/* Cancel button removed as requested */}
                 <button
                     type="submit"
                     disabled={loading}
-                    className="flex-[2] flex items-center justify-center gap-2 rounded-xl bg-vasta-primary text-white py-3 text-sm font-bold hover:bg-vasta-primary-soft transition-all shadow-lg shadow-vasta-primary/20 disabled:opacity-50"
+                    className="w-full flex items-center justify-center gap-2 rounded-xl bg-vasta-primary text-white py-3 text-sm font-bold hover:bg-vasta-primary-soft transition-all shadow-lg shadow-vasta-primary/20 disabled:opacity-50"
                 >
                     {loading ? <Loader2 className="animate-spin" /> : <><Save size={18} /> Salvar</>}
                 </button>

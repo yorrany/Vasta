@@ -5,7 +5,7 @@ import { isValidUrl } from "./types"
 import { useState } from "react"
 
 interface GalleryViewProps {
-    onSelectType: (type: 'link' | 'collection' | 'product' | 'form') => void
+    onSelectType: (type: string) => void
     onUrlInput: (url: string) => void
 }
 
@@ -37,20 +37,20 @@ interface GalleryItem {
 
 const ITEMS: GalleryItem[] = [
     // Social
-    { name: 'Instagram', desc: 'Mostre seus posts e reels', icon: MessageSquare, type: 'link', color: 'bg-gradient-to-tr from-yellow-500 via-red-500 to-purple-500', categories: ['sugeridos', 'social'] },
-    { name: 'TikTok', desc: 'Compartilhe seus TikToks', icon: MessageSquare, type: 'link', color: 'bg-black', categories: ['sugeridos', 'social'] },
-    { name: 'YouTube', desc: 'Destaque vídeos do seu canal', icon: LayoutGrid, type: 'link', color: 'bg-red-600', categories: ['sugeridos', 'social', 'midia'] },
-    { name: 'Spotify', desc: 'Músicas, álbuns ou playlists', icon: LayoutGrid, type: 'link', color: 'bg-green-500', categories: ['sugeridos', 'midia'] },
-    { name: 'X / Twitter', desc: 'Mostre seus últimos tweets', icon: MessageSquare, type: 'link', color: 'bg-black', categories: ['social'] },
-    { name: 'LinkedIn', desc: 'Conecte-se profissionalmente', icon: MessageSquare, type: 'link', color: 'bg-blue-700', categories: ['social'] },
+    { name: 'Instagram', desc: 'Mostre seus posts e reels', icon: MessageSquare, type: 'instagram', color: 'bg-gradient-to-tr from-yellow-500 via-red-500 to-purple-500', categories: ['sugeridos', 'social'] },
+    { name: 'TikTok', desc: 'Compartilhe seus TikToks', icon: MessageSquare, type: 'tiktok', color: 'bg-black', categories: ['sugeridos', 'social'] },
+    { name: 'YouTube', desc: 'Destaque vídeos do seu canal', icon: LayoutGrid, type: 'youtube', color: 'bg-red-600', categories: ['sugeridos', 'social', 'midia'] },
+    { name: 'Spotify', desc: 'Músicas, álbuns ou playlists', icon: LayoutGrid, type: 'spotify', color: 'bg-green-500', categories: ['sugeridos', 'midia'] },
+    { name: 'X / Twitter', desc: 'Mostre seus últimos tweets', icon: MessageSquare, type: 'twitter', color: 'bg-black', categories: ['social'] },
+    { name: 'LinkedIn', desc: 'Conecte-se profissionalmente', icon: MessageSquare, type: 'linkedin', color: 'bg-blue-700', categories: ['social'] },
 
     // Comércio
     { name: 'Produto', desc: 'Venda um produto único', icon: ShoppingBag, type: 'product', color: 'bg-orange-500', categories: ['comercio'] },
     { name: 'Coleção', desc: 'Agrupe vários produtos', icon: LayoutGrid, type: 'collection', color: 'bg-purple-500', categories: ['comercio'] },
 
     // Contato
-    { name: 'WhatsApp', desc: 'Botão direto para conversa', icon: MessageSquare, type: 'link', color: 'bg-green-500', categories: ['contato'] },
-    { name: 'Email', desc: 'Receba emails diretamente', icon: MessageSquare, type: 'link', color: 'bg-gray-500', categories: ['contato'] },
+    { name: 'WhatsApp', desc: 'Botão direto para conversa', icon: MessageSquare, type: 'whatsapp', color: 'bg-green-500', categories: ['contato'] },
+    { name: 'Email', desc: 'Receba emails diretamente', icon: MessageSquare, type: 'email', color: 'bg-gray-500', categories: ['contato'] },
     { name: 'Formulário', desc: 'Capture leads e respostas', icon: MessageSquare, type: 'form', color: 'bg-pink-500', categories: ['contato'] },
 
     // Texto
@@ -116,8 +116,8 @@ export function GalleryView({ onSelectType, onUrlInput }: GalleryViewProps) {
                                 setSearchQuery('')
                             }}
                             className={`flex w-full items-center gap-1.5 sm:gap-2 lg:gap-3 rounded-lg sm:rounded-xl px-2 sm:px-3 py-1.5 sm:py-2 text-[10px] sm:text-xs lg:text-sm font-medium transition-colors ${selectedCategory === cat.id
-                                    ? 'bg-vasta-surface-soft text-vasta-text'
-                                    : 'text-vasta-muted hover:bg-vasta-surface-soft hover:text-vasta-text'
+                                ? 'bg-vasta-surface-soft text-vasta-text'
+                                : 'text-vasta-muted hover:bg-vasta-surface-soft hover:text-vasta-text'
                                 }`}
                             title={cat.label}
                         >
@@ -128,8 +128,8 @@ export function GalleryView({ onSelectType, onUrlInput }: GalleryViewProps) {
                     <button
                         onClick={() => setSelectedCategory('all')}
                         className={`flex w-full items-center gap-1.5 sm:gap-2 lg:gap-3 rounded-lg sm:rounded-xl px-2 sm:px-3 py-1.5 sm:py-2 text-[10px] sm:text-xs lg:text-sm font-medium transition-colors ${selectedCategory === 'all'
-                                ? 'bg-vasta-surface-soft text-vasta-text'
-                                : 'text-vasta-muted hover:bg-vasta-surface-soft hover:text-vasta-text'
+                            ? 'bg-vasta-surface-soft text-vasta-text'
+                            : 'text-vasta-muted hover:bg-vasta-surface-soft hover:text-vasta-text'
                             }`}
                         title="Ver todos"
                     >

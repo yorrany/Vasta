@@ -48,16 +48,36 @@ export function AddLinkModal({ isOpen, onClose, onSuccess, initialState }: AddLi
                 setState({ view: 'form-modal' })
                 break
             case 'instagram':
+                // Instagram remains as integration for feed
                 setState({ view: 'instagram', integrationType: 'instagram' })
                 break
             case 'tiktok':
-                setState({ view: 'tiktok', integrationType: 'tiktok' })
+                setState({ view: 'form', platform: 'tiktok' })
                 break
             case 'youtube':
-                setState({ view: 'youtube', integrationType: 'youtube' })
+                setState({ view: 'form', platform: 'youtube' })
+                break
+            case 'twitter':
+                setState({ view: 'form', platform: 'twitter' })
+                break
+            case 'linkedin':
+                setState({ view: 'form', platform: 'linkedin' })
+                break
+            case 'spotify':
+                setState({ view: 'form', platform: 'spotify' })
+                break
+            case 'whatsapp':
+                setState({ view: 'form', platform: 'whatsapp' })
+                break
+            case 'email':
+                setState({ view: 'form', platform: 'email' })
                 break
             default:
-                alert("Tipo não implementado: " + type)
+                // Fallback for any other type to generic form if it's not handled
+                // Or just alert if unknown
+                console.warn("Unknown type:", type)
+                setState({ view: 'form' }) // Default behavior
+                break
         }
     }
 
@@ -125,6 +145,7 @@ export function AddLinkModal({ isOpen, onClose, onSuccess, initialState }: AddLi
                         <FormView
                             initialUrl={state.url}
                             initialTitle={state.title}
+                            platform={state.platform}
                             onBack={handleBack}
                             onSuccess={handleSuccess}
                         />

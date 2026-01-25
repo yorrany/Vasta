@@ -6,11 +6,12 @@ import { LinkForm } from "../LinkForm"
 interface FormViewProps {
     initialUrl?: string
     initialTitle?: string
+    platform?: string
     onBack: () => void
     onSuccess: () => void
 }
 
-export function FormView({ initialUrl, initialTitle, onBack, onSuccess }: FormViewProps) {
+export function FormView({ initialUrl, initialTitle, platform, onBack, onSuccess }: FormViewProps) {
     return (
         <div className="flex flex-col h-full animate-in slide-in-from-right-10 duration-200 fade-in">
             <button
@@ -26,6 +27,7 @@ export function FormView({ initialUrl, initialTitle, onBack, onSuccess }: FormVi
                 <LinkForm
                     initialUrl={initialUrl}
                     initialTitle={initialTitle}
+                    platform={platform}
                     onSuccess={onSuccess}
                     onCancel={onBack}
                 />

@@ -5,6 +5,7 @@ export interface AddLinkState {
   url?: string
   title?: string
   integrationType?: 'instagram' | 'tiktok' | 'youtube'
+  platform?: string
 }
 
 export function isValidUrl(text: string) {
