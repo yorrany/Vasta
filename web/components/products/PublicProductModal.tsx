@@ -41,7 +41,7 @@ export function PublicProductModal({ isOpen, onClose, product, onBuy, accentColo
         <div className="fixed inset-0 z-[99999] flex items-center justify-center p-4">
             {/* Backdrop */}
             <div
-                className="absolute inset-0 bg-black/80 backdrop-blur-md animate-in fade-in duration-300"
+                className="fixed inset-0 bg-black/80 backdrop-blur-xl animate-in fade-in duration-300"
                 onClick={onClose}
             />
 
