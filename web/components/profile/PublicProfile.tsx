@@ -533,7 +533,7 @@ export function PublicProfile({ username }: PublicProfileProps) {
                         href="https://vasta.pro"
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="pointer-events-auto flex items-center gap-2 bg-black border border-white/20 text-white px-6 py-3 rounded-full font-bold text-sm shadow-2xl hover:scale-105 active:scale-95 transition-all backdrop-blur-md"
+                        className="pointer-events-auto flex items-center gap-2 bg-black border border-white/20 text-white px-6 py-3 rounded-full font-bold text-sm shadow-lg hover:scale-105 active:scale-95 transition-all backdrop-blur-md"
                     >
                         Crie seu Vasta <ArrowRight size={16} />
                     </a>
