@@ -358,7 +358,7 @@ export function PublicProfile({ username }: PublicProfileProps) {
                                 if (link.url.startsWith('header://')) {
                                     const subtitle = link.url.replace('header://', '')
                                     renderedContent.push(
-                                        <div key={link.id} className="text-center w-full pt-8 pb-4 break-inside-avoid">
+                                        <div key={link.id} className="text-center w-full pt-8 pb-8 break-inside-avoid">
                                             <h2 className="text-2xl lg:text-3xl font-bold" style={{ color: pageStyle.color }}>
                                                 {link.title}
                                             </h2>

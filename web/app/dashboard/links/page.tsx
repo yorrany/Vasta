@@ -123,6 +123,7 @@ export default function LinksPage() {
   const { user } = useAuth()
   const [links, setLinks] = useState<LinkItem[]>([])
   const [loading, setLoading] = useState(true)
+  const [filter, setFilter] = useState<'all' | 'active'>('all')
 
   // Edit Modal State
   const [isEditModalOpen, setIsEditModalOpen] = useState(false)
@@ -150,6 +151,9 @@ export default function LinksPage() {
 
     if (data) setLinks(data)
     setLoading(false)
+
+    // Also notify preview on fetch in case of new items
+    window.dispatchEvent(new Event('vasta:link-update'))
   }
 
   useEffect(() => {
@@ -192,10 +196,18 @@ export default function LinksPage() {
 
     // Server update
     await supabase.from('links').update({ is_active: !currentState }).eq('id', id)
+
+    // Notify Preview after update
+    window.dispatchEvent(new Event('vasta:link-update'))
   }
 
   const handleDragEnd = async (event: DragEndEvent) => {
     const { active, over } = event
+
+    if (filter !== 'all') {
+      // Disable drag if filtered, to avoid order confusion
+      return
+    }
 
     if (active.id !== over?.id) {
       setLinks((items) => {
@@ -213,6 +225,9 @@ export default function LinksPage() {
           supabase.from('links').update({ display_order: upd.display_order }).eq('id', upd.id).then()
         })
 
+        // Notify Preview
+        window.dispatchEvent(new Event('vasta:link-update'))
+
         return newItems
       })
     }
@@ -226,6 +241,11 @@ export default function LinksPage() {
     setEditingLink(link)
     setIsEditModalOpen(true)
   }
+
+  const filteredLinks = links.filter(link => {
+    if (filter === 'active') return link.is_active
+    return true
+  })
 
   if (loading) {
     return <div className="flex h-64 items-center justify-center"><Loader2 className="animate-spin text-vasta-primary" /></div>
@@ -247,10 +267,20 @@ export default function LinksPage() {
       </div>
 
       <div className="flex gap-2 p-1 bg-vasta-surface-soft/50 rounded-2xl w-fit">
-        <button className="rounded-xl px-4 py-2 text-sm font-medium bg-vasta-surface text-vasta-text shadow-sm transition-all border border-vasta-border">
+        <button
+          onClick={() => setFilter('all')}
+          className={`rounded-xl px-4 py-2 text-sm font-medium transition-all ${filter === 'all'
+            ? 'bg-vasta-surface text-vasta-text shadow-sm border border-vasta-border'
+            : 'text-vasta-muted hover:text-vasta-text'}`}
+        >
           Todos ({links.length})
         </button>
-        <button className="rounded-xl px-4 py-2 text-sm font-medium text-vasta-muted hover:text-vasta-text transition-all">
+        <button
+          onClick={() => setFilter('active')}
+          className={`rounded-xl px-4 py-2 text-sm font-medium transition-all ${filter === 'active'
+            ? 'bg-vasta-surface text-vasta-text shadow-sm border border-vasta-border'
+            : 'text-vasta-muted hover:text-vasta-text'}`}
+        >
           Ativos ({links.filter(l => l.is_active).length})
         </button>
       </div>
@@ -261,8 +291,8 @@ export default function LinksPage() {
         onDragEnd={handleDragEnd}
       >
         <div className="grid gap-4">
-          <SortableContext items={links.map(l => l.id)} strategy={verticalListSortingStrategy}>
-            {links.map(link => (
+          <SortableContext items={filteredLinks.map(l => l.id)} strategy={verticalListSortingStrategy}>
+            {filteredLinks.map(link => (
               <SortableLinkItem
                 key={link.id}
                 link={link}
