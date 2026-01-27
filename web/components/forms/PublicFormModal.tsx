@@ -35,6 +35,7 @@ export function PublicFormModal({ isOpen, onClose, form, accentColor = "#000", i
     const [success, setSuccess] = useState(false)
     const [formData, setFormData] = useState<Record<string, string>>({})
     const [captchaToken, setCaptchaToken] = useState<string | null>(null)
+    const [turnstileError, setTurnstileError] = useState(false)
 
     // Normalize fields to ensure unique IDs
     const normalizedForm = useMemo(() => {
@@ -223,14 +224,33 @@ export function PublicFormModal({ isOpen, onClose, form, accentColor = "#000", i
                             {/* @ts-ignore - Turnstile library has incomplete type definitions */}
                             <Turnstile
                                 siteKey={process.env.NEXT_PUBLIC_TURNSTILE_KEY || process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY || '0x4AAAAAACLyd4XoDMS56kOLRKOQfMRUUJU'}
-                                onSuccess={(token) => setCaptchaToken(token)}
-                                onError={() => setCaptchaToken(null)}
-                                onExpire={() => setCaptchaToken(null)}
+                                onSuccess={(token) => {
+                                    setCaptchaToken(token)
+                                    setTurnstileError(false)
+                                }}
+                                onError={() => {
+                                    setCaptchaToken(null)
+                                    setTurnstileError(true)
+                                }}
+                                onExpire={() => {
+                                    setCaptchaToken(null)
+                                    setTurnstileError(false)
+                                }}
                                 options={{
                                     theme: isDark ? 'dark' : 'light',
                                     size: 'flexible'
                                 }}
                             />
+                            {turnstileError && (
+                                <p className="text-red-500 text-xs text-center">
+                                    Erro na verificação de segurança.
+                                </p>
+                            )}
+                            {!captchaToken && !turnstileError && (
+                                <p className={`text-xs text-center ${isDark ? 'text-gray-500' : 'text-gray-400'}`}>
+                                    Verificando segurança...
+                                </p>
+                            )}
                         </div>
 
                         <button

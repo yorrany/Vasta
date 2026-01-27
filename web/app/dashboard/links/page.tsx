@@ -226,41 +226,22 @@ export default function LinksPage() {
     return linkIds
   }, [links])
 
-  // Separate links into collections and standalone links
-  const { collections, standaloneLinks } = useMemo(() => {
-    const colls: LinkItem[] = []
-    const standalone: LinkItem[] = []
+  // Filter visible items (Collections + Standalone Links) respecting the original order
+  const visibleItems = useMemo(() => {
+    return links.filter(link => {
+      // Always show collections
+      if (link.url.startsWith('#collection:')) return true
 
-    links.forEach(link => {
-      if (link.url.startsWith('#collection:')) {
-        colls.push(link)
-      } else if (!linksInCollections.has(link.id)) {
-        standalone.push(link)
-      }
+      // Show link ONLY if it's NOT inside a collection
+      return !linksInCollections.has(link.id)
     })
-
-    return { collections: colls, standaloneLinks: standalone }
   }, [links, linksInCollections])
 
-  // Get child links for a collection
-  const getCollectionLinks = (collection: LinkItem): LinkItem[] => {
-    try {
-      const collectionData = JSON.parse(collection.url.replace('#collection:', ''))
-      const linkIds = collectionData.links || []
-      return links.filter(link => linkIds.includes(link.id))
-    } catch {
-      return []
-    }
-  }
-
-  // Filter for display
-  const filteredStandaloneLinks = filter === 'all'
-    ? standaloneLinks
-    : standaloneLinks.filter(l => l.is_active)
-
-  const filteredCollections = filter === 'all'
-    ? collections
-    : collections.filter(c => c.is_active)
+  // Apply Active/All filter
+  const filteredItems = useMemo(() => {
+    if (filter === 'all') return visibleItems
+    return visibleItems.filter(l => l.is_active)
+  }, [visibleItems, filter])
 
   const toggleActive = async (id: number, currentState: boolean) => {
     // Optimistic update
@@ -289,7 +270,47 @@ export default function LinksPage() {
       setLinks((items) => {
         const oldIndex = items.findIndex((item) => item.id === active.id)
         const newIndex = items.findIndex((item) => item.id === over?.id)
-        const newItems = arrayMove(items, oldIndex, newIndex)
+
+        // Note: arrayMove works on the full 'items' array.
+        // But if we are dragging visual items that skip actual items in the array (hidden children),
+        // we might have issues if we just use indices.
+        // However, standard dnd-kit vertical list usually implies visual index matching.
+        // If 'items' contains hidden children, moving index 5 to 2 might jump over hidden items.
+
+        // BETTER APPROACH for mixed lists:
+        // We need to reorder the SUBSET of visible items, and then reconstruct the full list.
+        // But simply swapping in the full list is easier if hidden items are ignored/safe.
+        // Let's stick to simple arrayMove on the full list for now, assuming hidden items (children)
+        // are usually grouped or at the end? No, they are anywhere.
+
+        // Actually, since child links are hidden from this view, they shouldn't be involved in the drag.
+        // But 'items' here IS the full list including children.
+        // If I drag Item A (index 0) to position of Item B (index 5), and indices 1-4 are hidden children...
+        // `arrayMove` on the full list might act weirdly if I don't map visual indices to real indices.
+
+        // ROBUST REORDERING:
+        const visibleIds = visibleItems.map(i => i.id)
+        const activeId = active.id as number
+        const overId = over?.id as number
+
+        const oldVisualIndex = visibleIds.indexOf(activeId)
+        const newVisualIndex = visibleIds.indexOf(overId)
+
+        if (oldVisualIndex === -1 || newVisualIndex === -1) return items
+
+        // Create a new array based on the visual move
+        const newVisibleOrder = arrayMove(visibleIds, oldVisualIndex, newVisualIndex)
+
+        // Reconstruct the full list, preserving the relative order of visible items
+        // and keeping hidden items where they were (relative to their neighbors? or just stable).
+        // Simplest strategy: Rebuild 'items' by picking from newVisibleOrder when we encounter a visible item,
+        // and keeping hidden items in place? No, that's hard.
+
+        // EASIER: Just move the item in the full list from its REAL old index to the REAL new index of the target.
+        const realOldIndex = items.findIndex(i => i.id === activeId)
+        const realNewIndex = items.findIndex(i => i.id === overId)
+
+        const newItems = arrayMove(items, realOldIndex, realNewIndex)
 
         const updates = newItems.map((item, index) => ({
           id: item.id,
@@ -343,11 +364,6 @@ export default function LinksPage() {
     }
   }
 
-  const filteredLinks = links.filter(link => {
-    if (filter === 'active') return link.is_active
-    return true
-  })
-
   if (loading) {
     return <div className="flex h-64 items-center justify-center"><Loader2 className="animate-spin text-vasta-primary" /></div>
   }
@@ -392,28 +408,28 @@ export default function LinksPage() {
         onDragEnd={handleDragEnd}
       >
         <div className="grid gap-4">
-          {/* All items combined for sorting */}
-          <SortableContext items={[...filteredCollections, ...filteredStandaloneLinks].map(l => l.id)} strategy={verticalListSortingStrategy}>
-            {/* Render Collections First */}
-            {filteredCollections.map(collection => (
-              <CollectionItem
-                key={collection.id}
-                collection={collection}
-                childLinks={getCollectionLinks(collection)}
-                toggleActive={toggleActive}
-                onEdit={openEditModal}
-              />
-            ))}
-
-            {/* Then Render Standalone Links */}
-            {filteredStandaloneLinks.map(link => (
-              <SortableLinkItem
-                key={link.id}
-                link={link}
-                toggleActive={toggleActive}
-                onEdit={openEditModal}
-              />
-            ))}
+          <SortableContext items={filteredItems.map(l => l.id)} strategy={verticalListSortingStrategy}>
+            {filteredItems.map(item => {
+              if (item.url.startsWith('#collection:')) {
+                return (
+                  <CollectionItem
+                    key={item.id}
+                    collection={item}
+                    childLinks={getCollectionLinks(item)}
+                    toggleActive={toggleActive}
+                    onEdit={openEditModal}
+                  />
+                )
+              }
+              return (
+                <SortableLinkItem
+                  key={item.id}
+                  link={item}
+                  toggleActive={toggleActive}
+                  onEdit={openEditModal}
+                />
+              )
+            })}
           </SortableContext>
         </div>
       </DndContext>
