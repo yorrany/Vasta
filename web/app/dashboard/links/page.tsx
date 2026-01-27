@@ -226,6 +226,17 @@ export default function LinksPage() {
     return linkIds
   }, [links])
 
+  // Get child links for a collection
+  const getCollectionLinks = (collection: LinkItem): LinkItem[] => {
+    try {
+      const collectionData = JSON.parse(collection.url.replace('#collection:', ''))
+      const linkIds = collectionData.links || []
+      return links.filter(link => linkIds.includes(link.id))
+    } catch {
+      return []
+    }
+  }
+
   // Filter visible items (Collections + Standalone Links) respecting the original order
   const visibleItems = useMemo(() => {
     return links.filter(link => {
