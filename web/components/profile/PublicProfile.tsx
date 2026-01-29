@@ -10,6 +10,7 @@ import { PublicProductModal } from "../products/PublicProductModal"
 import { PublicFormModal } from "../forms/PublicFormModal"
 import { ThemedCookieConsent } from "../ThemedCookieConsent"
 import { PublicCollectionItem } from "./PublicCollectionItem"
+import { AnalyticsTracker } from "../../components/AnalyticsTracker"
 import "../../app/globals.css" // Import global styles for Tailwind components
 
 type LinkStyle = 'glass' | 'solid' | 'outline'
@@ -186,6 +187,22 @@ export function PublicProfile({ username }: PublicProfileProps) {
         }
     }
 
+    const trackClick = (linkId: number) => {
+        try {
+            fetch('/api/analytics/track', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    profileId: profile?.id,
+                    type: 'click',
+                    linkId
+                })
+            })
+        } catch (e) {
+            console.error('Track click error', e)
+        }
+    }
+
 
 
     if (loading) {
@@ -271,6 +288,7 @@ export function PublicProfile({ username }: PublicProfileProps) {
 
     return (
         <div style={pageStyle} className="min-h-screen w-full transition-colors duration-500 flex flex-col items-center">
+            {profile && <AnalyticsTracker profileId={profile.id} />}
 
             {/* Profile Identity - Centered Column */}
             <aside className={`w-full max-w-3xl shrink-0 flex flex-col relative z-10 ${currentThemeConfig?.sidebar || 'bg-transparent'}`}>
@@ -393,14 +411,26 @@ export function PublicProfile({ username }: PublicProfileProps) {
                                                     link={link}
                                                     theme={theme as any}
                                                     themeConfig={currentThemeConfig}
-                                                    onClick={link.url.startsWith('#form:') ? (e) => { e.preventDefault(); openForm(link.id) } : undefined}
+                                                    onClick={(e) => {
+                                                        trackClick(link.id)
+                                                        if (link.url.startsWith('#form:')) {
+                                                            e.preventDefault();
+                                                            openForm(link.id)
+                                                        }
+                                                    }}
                                                 />
                                             ) : (
                                                 <a
                                                     href={link.url}
                                                     target="_blank"
                                                     rel="noopener noreferrer"
-                                                    onClick={link.url.startsWith('#form:') ? (e) => { e.preventDefault(); openForm(link.id) } : undefined}
+                                                    onClick={(e) => {
+                                                        trackClick(link.id)
+                                                        if (link.url.startsWith('#form:')) {
+                                                            e.preventDefault();
+                                                            openForm(link.id)
+                                                        }
+                                                    }}
                                                     className={`block w-full p-4 lg:p-5 group relative overflow-hidden rounded-2xl transition-all duration-300 hover:scale-[1.02] active:scale-[0.98] shadow-sm hover:shadow-xl border border-transparent`}
                                                     style={{
                                                         ...(link_style === 'solid' ? { backgroundColor: accent_color, color: '#fff' } : {}),
@@ -447,6 +477,9 @@ export function PublicProfile({ username }: PublicProfileProps) {
                                             linkStyle={link_style}
                                             accentColor={accent_color}
                                             openForm={openForm}
+                                            onLinkClick={(linkId) => {
+                                                trackClick(linkId)
+                                            }}
                                         />
                                     )
                                 } else if (link.url.startsWith('header://')) {

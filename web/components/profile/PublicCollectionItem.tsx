@@ -20,7 +20,7 @@ interface PublicCollectionItemProps {
     linkStyle: string
     accentColor: string
     openForm: (id: number) => void
-    onLinkClick?: (e: React.MouseEvent) => void
+    onLinkClick?: (linkId: number) => void
     isPreview?: boolean
 }
 
@@ -121,9 +121,22 @@ export function PublicCollectionItem({ link, allLinks, theme, themeConfig, linkS
                     {childLinks.map((childLink) => {
                         const handleClick = (e: React.MouseEvent) => {
                             if (onLinkClick) {
-                                onLinkClick(e)
-                                return
+                                onLinkClick(childLink.id)
+                                // We don't return here if we want default behavior (like form opening) to potentially happen? 
+                                // Actually, if we pass onLinkClick we might want to override handling or just track.
+                                // In PublicProfile, we want to TRACK then let default happen if it's not handled.
+                                // But currently `PublicProfile` passes `onLinkClick` to handle everything? 
+                                // No, `PublicCollectionItem` says "if onLinkClick ... return".
+                                // This assumes onLinkClick prevents default.
+                                // We should probably just CALL it for tracking and let standard logic continue if it's just tracking.
+                                // But let's stick to the pattern: if provided, use it.
+                                // Wait, the Plan is to TRACK.
+                                // If I return, the standard "form" logic below (lines 127-130) might be skipped.
+                                // Let's check line 127.
+                                // If `onLinkClick` is purely for tracking, it shouldn't stop execution.
+                                // But the interface implies "Handle Link Click".
                             }
+                            // Form handling logic:
                             if (childLink.url.startsWith('#form:')) {
                                 e.preventDefault()
                                 openForm(childLink.id)

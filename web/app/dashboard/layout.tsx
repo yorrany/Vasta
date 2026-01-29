@@ -104,7 +104,8 @@ const navItems = [
   { href: "/dashboard/formularios", label: "Formulários", icon: FileText, exact: false },
   { href: "/dashboard/aparencia", label: "Aparência", icon: ImageIcon, exact: false },
   { href: "/dashboard/minha-loja", label: "Minha Loja", icon: ShoppingBag, exact: false },
-  { href: "/dashboard/vendas", label: "Vendas", icon: BarChart3, exact: false }
+  { href: "/dashboard/analytics", label: "Analytics", icon: BarChart3, exact: false },
+  { href: "/dashboard/vendas", label: "Vendas", icon: CreditCard, exact: false }
 ]
 
 function SidebarLink({ href, label, icon: Icon, exact }: { href: string; label: string; icon: any; exact?: boolean }) {
